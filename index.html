@@ -27,7 +27,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 8px;
+      padding: 12px;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       position: relative;
@@ -46,32 +46,33 @@
       pointer-events: none;
     }
 
-    /* ---------- MAIN WHITE CONTAINER (COMPRESSED) ---------- */
+    /* ---------- MAIN WHITE CONTAINER ---------- */
     .container {
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       background: #ffffff;
       border-radius: 32px;
-      padding: 16px 12px 16px;
+      padding: 20px 16px 24px;
       box-shadow: 0 30px 70px -18px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
       align-items: center;
       position: relative;
       z-index: 1;
-      max-height: 96vh;
+      height: 90vh; /* Restricts height to force natural scrolling */
+      overflow-y: auto; /* Enables scrolling */
     }
 
     /* ---------- BRAND HEADER ---------- */
     .brand {
       text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       width: 100%;
       flex-shrink: 0;
     }
 
     .brand h1 {
-      font-size: 1.1rem;
+      font-size: 1.25rem;
       font-weight: 800;
       letter-spacing: -0.025em;
       color: #0b1a2e;
@@ -87,16 +88,16 @@
 
     .brand .important-banner {
       display: block;
-      margin-top: 6px;
+      margin-top: 8px;
       background: #ffc107;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 0.58rem;
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.65rem;
       font-weight: 700;
       color: #0b1a2e;
       letter-spacing: 0.1px;
       border-bottom: 2px solid #d4a100;
-      line-height: 1.25;
+      line-height: 1.3;
     }
 
     /* Space reserved for your attached logo */
@@ -105,7 +106,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 20px;
+      height: 24px;
       width: 100%;
     }
     
@@ -115,24 +116,67 @@
       object-fit: contain;
     }
 
-    /* ---------- CARDS VERTICAL STACK (COMPRESSED) ---------- */
+    /* ---------- MOVING GRAPHICS CAROUSEL ---------- */
+    .momo-carousel-container {
+      width: 100%;
+      margin: 8px 0 16px;
+      background: #f4f7fb;
+      border-radius: 12px;
+      padding: 10px 0;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 44px;
+      flex-shrink: 0;
+      border: 1px solid #e1ebf5;
+    }
+
+    .momo-carousel-track {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: max-content;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .momo-feature-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      padding: 6px 12px;
+      border-radius: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border: 1px solid #ffc107;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #0b1a2e;
+      white-space: nowrap;
+    }
+
+    .momo-feature-item span.icon {
+      font-size: 0.9rem;
+    }
+
+    /* ---------- CARDS VERTICAL STACK ---------- */
     .cards-stack {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      gap: 16px;
       width: 100%;
-      flex: 1;
-      justify-content: center;
+      padding-bottom: 20px;
     }
 
     /* ---------- CARD BASE ---------- */
     .card {
       position: relative;
       width: 100%;
-      min-height: 66px;
-      border-radius: 12px;
-      padding: 8px 10px 6px;
+      min-height: 140px;
+      border-radius: 20px;
+      padding: 14px 16px 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -140,9 +184,11 @@
       color: #ffffff;
       overflow: hidden;
       isolation: isolate;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      box-shadow: 0 4px 12px -6px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.4);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      /* USING THE UPLOADED IMAGE */
+      background-image: url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1000&auto=format&fit=crop'); 
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -150,8 +196,8 @@
     }
 
     .card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 22px -8px rgba(0, 0, 0, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.5);
     }
 
     .card::after {
@@ -169,13 +215,9 @@
       z-index: 2;
     }
 
-    /* ---------- REALISTIC SATELLITE BACKGROUND ---------- */
-    .card-satellite {
-      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="spaceGrad" cx="50%" cy="20%" r="100%"><stop offset="0%" stop-color="%230d1f3a"/><stop offset="50%" stop-color="%23061228"/><stop offset="100%" stop-color="%23030a14"/></radialGradient><radialGradient id="earthGlow" cx="50%" cy="100%" r="70%"><stop offset="0%" stop-color="%234a8fce" stop-opacity="0.6"/><stop offset="35%" stop-color="%232a5f99" stop-opacity="0.4"/><stop offset="100%" stop-color="%23030a14" stop-opacity="0"/></radialGradient><radialGradient id="earthSurface" cx="50%" cy="95%" r="65%"><stop offset="0%" stop-color="%233a6ea5"/><stop offset="40%" stop-color="%231f4a7a"/><stop offset="80%" stop-color="%230d1f3a"/><stop offset="100%" stop-color="%23051020"/></radialGradient><linearGradient id="panelGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%234a6a8e"/><stop offset="50%" stop-color="%232a4a6e"/><stop offset="100%" stop-color="%231a3452"/></linearGradient><linearGradient id="panelGrad2" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="%233a5a7e"/><stop offset="50%" stop-color="%2322405e"/><stop offset="100%" stop-color="%23182e48"/></linearGradient><filter id="satGlow"><feGaussianBlur stdDeviation="0.8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter><filter id="starGlow"><feGaussianBlur stdDeviation="0.5"/></filter></defs><rect width="600" height="200" fill="url(%23spaceGrad)"/><circle cx="480" cy="30" r="1.2" fill="%23ffffff" opacity="0.9" filter="url(%23starGlow)"/><circle cx="80" cy="50" r="0.9" fill="%23ffffff" opacity="0.7"/><circle cx="520" cy="80" r="1" fill="%23ffffff" opacity="0.8"/><circle cx="150" cy="20" r="0.8" fill="%23ffffff" opacity="0.6"/><circle cx="420" cy="60" r="0.7" fill="%23ffffff" opacity="0.5"/><circle cx="60" cy="120" r="0.9" fill="%23ffffff" opacity="0.7"/><circle cx="550" cy="140" r="0.8" fill="%23ffffff" opacity="0.5"/><circle cx="300" cy="10" r="0.8" fill="%23ffffff" opacity="0.8"/><circle cx="180" cy="150" r="1" fill="%23ffffff" opacity="0.6"/><circle cx="480" cy="170" r="0.7" fill="%23ffffff" opacity="0.6"/><ellipse cx="300" cy="200" rx="550" ry="80" fill="url(%23earthGlow)"/><ellipse cx="300" cy="210" rx="500" ry="70" fill="url(%23earthSurface)"/><ellipse cx="300" cy="220" rx="460" ry="60" fill="%231a3a5e" opacity="0.8"/><path d="M0 170 Q150 160 300 165 T600 160 L600 200 L0 200 Z" fill="%23152842" opacity="0.7"/><g transform="translate(120, 40) rotate(-15)" filter="url(%23satGlow)"><rect x="60" y="10" width="90" height="20" rx="4" fill="%23d0dce8"/><rect x="70" y="14" width="25" height="12" rx="2" fill="%2380a0c0"/><rect x="110" y="14" width="25" height="12" rx="2" fill="%2380a0c0"/><rect x="-120" y="2" width="80" height="36" rx="3" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="1"/><rect x="-35" y="2" width="80" height="36" rx="3" fill="url(%23panelGrad2)" stroke="%235a8ab5" stroke-width="1"/><line x1="-120" y1="14" x2="-40" y2="14" stroke="%234a7a9e" stroke-width="0.4" opacity="0.6"/><line x1="-120" y1="26" x2="-40" y2="26" stroke="%234a7a9e" stroke-width="0.4" opacity="0.6"/><line x1="-80" y1="2" x2="-80" y2="38" stroke="%234a7a9e" stroke-width="0.4" opacity="0.6"/><line x1="-35" y1="14" x2="45" y2="14" stroke="%234a7a9e" stroke-width="0.4" opacity="0.6"/><line x1="-35" y1="26" x2="45" y2="26" stroke="%234a7a9e" stroke-width="0.4" opacity="0.6"/><line x1="5" y1="2" x2="5" y2="38" stroke="%234a7a9e" stroke-width="0.4" opacity="0.6"/><rect x="150" y="2" width="80" height="36" rx="3" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="1"/><rect x="235" y="2" width="80" height="36" rx="3" fill="url(%23panelGrad2)" stroke="%235a8ab5" stroke-width="1"/><circle cx="190" cy="30" r="8" fill="%23e8f0f8" opacity="0.9"/><circle cx="190" cy="30" r="3" fill="%23ffffff"/></g><g transform="translate(380, 110) rotate(20)" filter="url(%23satGlow)" opacity="0.85"><rect x="40" y="10" width="70" height="20" rx="4" fill="%23b0c8e0"/><rect x="-100" y="2" width="65" height="36" rx="3" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="0.8"/><rect x="-35" y="2" width="65" height="36" rx="3" fill="url(%23panelGrad2)" stroke="%235a8ab5" stroke-width="0.8"/><rect x="110" y="2" width="65" height="36" rx="3" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="0.8"/><rect x="175" y="2" width="65" height="36" rx="3" fill="url(%23panelGrad2)" stroke="%235a8ab5" stroke-width="0.8"/><circle cx="140" cy="30" r="8" fill="%23e0ecf8" opacity="0.9"/><circle cx="140" cy="30" r="3" fill="%23ffffff"/></g></svg>');
-    }
-
-    /* ---------- SLATE-BLUE GRADIENT CARD ---------- */
+    /* ---------- SLATE-BLUE GRADIENT CARD (Card 6) ---------- */
     .card-gradient {
+      background-image: none;
       background: linear-gradient(155deg, #3a5a7e 0%, #2a4a6e 35%, #1d3450 70%, #14243a 100%);
     }
 
@@ -190,56 +232,56 @@
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       border: 1px solid rgba(255, 255, 255, 0.28);
-      padding: 1px 6px;
+      padding: 3px 10px;
       border-radius: 100px;
-      font-size: 0.42rem;
+      font-size: 0.55rem;
       font-weight: 600;
-      letter-spacing: 0.3px;
+      letter-spacing: 0.4px;
       text-transform: uppercase;
       color: #ffffff;
-      margin-bottom: 1px;
+      margin-bottom: 4px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
     /* ---------- TITLE / DURATION / PRICE ---------- */
     .card-title {
-      font-size: 0.9rem;
+      font-size: 1.3rem;
       font-weight: 800;
-      line-height: 1.1;
-      margin: 1px 0 0;
+      line-height: 1.15;
+      margin: 4px 0 2px;
       letter-spacing: -0.02em;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
       width: 100%;
     }
 
     .card-duration {
-      font-size: 0.52rem;
+      font-size: 0.7rem;
       font-weight: 500;
       color: #d8e2f0;
       background: rgba(0, 0, 0, 0.22);
-      padding: 1px 6px;
+      padding: 2px 12px;
       border-radius: 100px;
       display: inline-block;
-      margin-bottom: 1px;
+      margin-bottom: 6px;
       border: 1px solid rgba(255, 255, 255, 0.12);
       letter-spacing: 0.1px;
     }
 
     .card-price {
-      font-size: 1.1rem;
+      font-size: 1.8rem;
       font-weight: 800;
       letter-spacing: -0.03em;
-      margin: 1px 0 2px;
+      margin: 4px 0 8px;
       text-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
       line-height: 1;
       display: flex;
       align-items: baseline;
       justify-content: center;
-      gap: 2px;
+      gap: 4px;
     }
 
     .card-price small {
-      font-size: 0.52rem;
+      font-size: 0.7rem;
       font-weight: 600;
       opacity: 0.85;
       letter-spacing: 0.2px;
@@ -252,8 +294,8 @@
       font-weight: 700;
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.3);
-      width: 22px;
-      height: 22px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       text-decoration: none;
       display: flex;
@@ -278,8 +320,8 @@
     }
 
     .card-link svg {
-      width: 10px;
-      height: 10px;
+      width: 14px;
+      height: 14px;
       stroke: #ffffff;
       stroke-width: 2.5;
       fill: none;
@@ -290,13 +332,13 @@
     /* ---------- BOTTOM INFO ---------- */
     .bottom-info {
       max-width: 100%;
-      margin: 8px auto 0;
+      margin: 10px auto 0;
       text-align: center;
       color: #5f7a9a;
-      font-size: 0.5rem;
-      line-height: 1.4;
+      font-size: 0.65rem;
+      line-height: 1.5;
       font-weight: 450;
-      padding: 0 4px;
+      padding: 0 8px;
       letter-spacing: 0.1px;
       flex-shrink: 0;
     }
@@ -311,7 +353,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 12px;
+      padding: 16px;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.25s ease, visibility 0.25s;
@@ -326,13 +368,13 @@
     .modal-content {
       background: #ffffff;
       width: 100%;
-      max-width: 380px;
+      max-width: 400px;
       border-radius: 24px;
-      padding: 20px 18px 18px;
+      padding: 24px 20px 20px;
       box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
       transform: scale(0.95);
       transition: transform 0.25s ease;
-      max-height: 92vh;
+      max-height: 90vh;
       overflow-y: auto;
       position: relative;
       color: #1a2b3f;
@@ -344,14 +386,14 @@
 
     .modal-close {
       position: absolute;
-      top: 14px;
-      right: 14px;
+      top: 16px;
+      right: 16px;
       background: #f0f4fc;
       border: none;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 500;
       color: #2a4b6e;
       cursor: pointer;
@@ -369,25 +411,25 @@
 
     /* Modal Typography */
     .modal-header-icon {
-      font-size: 1.6rem;
-      margin-bottom: 4px;
+      font-size: 1.8rem;
+      margin-bottom: 6px;
       display: inline-block;
     }
     
     .modal-pkg-name {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       font-weight: 800;
       color: #0b1a2e;
-      margin: 0 0 2px;
+      margin: 0 0 4px;
       letter-spacing: -0.025em;
-      padding-right: 24px;
+      padding-right: 30px;
     }
 
     .modal-desc {
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       color: #4b6f95;
-      line-height: 1.45;
-      margin-bottom: 12px;
+      line-height: 1.5;
+      margin-bottom: 14px;
       font-weight: 500;
     }
 
@@ -395,15 +437,15 @@
       list-style: none;
       padding: 0;
       margin: 0 0 16px;
-      font-size: 0.78rem;
+      font-size: 0.85rem;
       color: #2a405a;
       line-height: 1.6;
     }
 
     .modal-details-list li {
       position: relative;
-      padding-left: 12px;
-      margin-bottom: 4px;
+      padding-left: 14px;
+      margin-bottom: 6px;
     }
 
     .modal-details-list li::before {
@@ -416,10 +458,10 @@
 
     .modal-footer-text {
       background: #f5f9ff;
-      padding: 10px 12px;
+      padding: 12px 14px;
       border-radius: 12px;
       color: #2a405a;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       line-height: 1.5;
       margin-bottom: 16px;
       border: 1px solid #e2eaf5;
@@ -437,8 +479,8 @@
       background: #f0f4fc;
       border: none;
       border-radius: 60px;
-      padding: 12px;
-      font-size: 0.85rem;
+      padding: 14px;
+      font-size: 0.9rem;
       font-weight: 700;
       color: #1f3a5f;
       cursor: pointer;
@@ -455,8 +497,8 @@
       background: #ffc107;
       border: none;
       border-radius: 60px;
-      padding: 12px;
-      font-size: 0.85rem;
+      padding: 14px;
+      font-size: 0.9rem;
       font-weight: 800;
       color: #0b1a2e;
       cursor: pointer;
@@ -470,72 +512,22 @@
       background: #ffd43b;
     }
 
-    /* Processing State */
-    .processing-state {
-      text-align: center;
-      padding: 20px 10px;
-    }
-
-    .processing-icon {
-      font-size: 2.5rem;
-      margin-bottom: 12px;
-      animation: pulse 1.6s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.7; transform: scale(1.06); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-
-    .processing-state h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #0b1a2e;
-      margin-bottom: 8px;
-    }
-
-    .processing-state p {
-      color: #2a4b6e;
-      font-size: 0.8rem;
-      line-height: 1.55;
-      background: #f5f9ff;
-      padding: 14px 16px;
-      border-radius: 16px;
-      border: 1px solid #e2eaf5;
-    }
-
     /* ---------- RESPONSIVE ---------- */
-    @media (min-width: 480px) {
-      .container { max-width: 460px; padding: 20px 16px 20px; }
-      .brand h1 { font-size: 1.2rem; }
-      .brand .important-banner { font-size: 0.65rem; padding: 5px 10px; }
-      .card { min-height: 72px; padding: 10px 12px 8px; border-radius: 14px; }
-      .card-title { font-size: 1rem; }
-      .card-duration { font-size: 0.58rem; }
-      .card-price { font-size: 1.2rem; }
-      .card-price small { font-size: 0.58rem; }
-      .card-link { width: 24px; height: 24px; }
-      .card-link svg { width: 11px; height: 11px; }
-      .badge { font-size: 0.48rem; padding: 2px 8px; }
-      .bottom-info { font-size: 0.55rem; margin-top: 10px; }
-      .cards-stack { gap: 8px; }
-    }
-
     @media (max-width: 380px) {
-      .container { padding: 12px 8px 12px; border-radius: 24px; }
-      .brand h1 { font-size: 1rem; }
-      .brand .important-banner { font-size: 0.52rem; padding: 3px 6px; }
-      .cards-stack { gap: 4px; }
-      .card { min-height: 58px; padding: 6px 8px 4px; border-radius: 10px; }
-      .card-title { font-size: 0.82rem; }
-      .card-duration { font-size: 0.45rem; padding: 1px 5px; }
-      .card-price { font-size: 1rem; }
-      .card-price small { font-size: 0.48rem; }
-      .card-link { width: 20px; height: 20px; }
-      .card-link svg { width: 9px; height: 9px; }
-      .badge { font-size: 0.38rem; padding: 1px 5px; }
-      .bottom-info { font-size: 0.45rem; margin-top: 6px; }
+      .container { padding: 16px 12px 18px; border-radius: 24px; }
+      .brand h1 { font-size: 1.1rem; }
+      .brand .important-banner { font-size: 0.6rem; padding: 4px 8px; }
+      .card { min-height: 130px; padding: 12px 14px 10px; }
+      .card-title { font-size: 1.15rem; }
+      .card-duration { font-size: 0.65rem; padding: 2px 10px; }
+      .card-price { font-size: 1.5rem; }
+      .card-price small { font-size: 0.65rem; }
+      .card-link { width: 28px; height: 28px; }
+      .card-link svg { width: 12px; height: 12px; }
+      .badge { font-size: 0.5rem; padding: 2px 8px; }
+      .bottom-info { font-size: 0.6rem; }
+      .modal-content { padding: 20px 16px 16px; }
+      .modal-pkg-name { font-size: 1.2rem; }
     }
   </style>
 </head>
@@ -546,6 +538,7 @@
       <h1>
         <span class="accent">Starlink to Cell — Data Plans</span>
       </h1>
+      
       <div class="important-banner">
         <strong>Important:</strong> Fast, reliable satellite data, instantly paid via MTN Momo.
       </div>
@@ -556,10 +549,21 @@
       </div>
     </div>
 
+    <!-- MOVING MOMO CAROUSEL -->
+    <div class="momo-carousel-container">
+      <div class="momo-carousel-track" id="momoCarousel">
+        <!-- 4 Graphics moving -->
+        <div class="momo-feature-item"><span class="icon">💸</span> Instant Transfer</div>
+        <div class="momo-feature-item"><span class="icon">🔒</span> Secure Payments</div>
+        <div class="momo-feature-item"><span class="icon">📱</span> No Bank Needed</div>
+        <div class="momo-feature-item"><span class="icon">⚡</span> Fast Checkout</div>
+      </div>
+    </div>
+
     <!-- PRICING CARDS — VERTICAL STACK -->
     <div class="cards-stack">
       <!-- CARD 1: 5GB -->
-      <div class="card card-satellite" data-package="1">
+      <div class="card" data-package="1">
         <span class="badge">New users only</span>
         <div class="card-title">5GB Data</div>
         <div class="card-duration">2-Day Plan</div>
@@ -570,7 +574,7 @@
       </div>
 
       <!-- CARD 2: 15GB -->
-      <div class="card card-satellite" data-package="2">
+      <div class="card" data-package="2">
         <span class="badge">Best for light users</span>
         <div class="card-title">15GB Data</div>
         <div class="card-duration">7-Day Plan</div>
@@ -581,7 +585,7 @@
       </div>
 
       <!-- CARD 3: 35GB -->
-      <div class="card card-satellite" data-package="3">
+      <div class="card" data-package="3">
         <span class="badge">Balanced</span>
         <div class="card-title">35GB Data</div>
         <div class="card-duration">14-Day Plan</div>
@@ -592,7 +596,7 @@
       </div>
 
       <!-- CARD 4: 50GB -->
-      <div class="card card-satellite" data-package="4">
+      <div class="card" data-package="4">
         <span class="badge">Heavy use</span>
         <div class="card-title">50GB Data</div>
         <div class="card-duration">21-Day Plan</div>
@@ -603,7 +607,7 @@
       </div>
 
       <!-- CARD 5: Monthly Unlimited -->
-      <div class="card card-satellite" data-package="5">
+      <div class="card" data-package="5">
         <span class="badge">Most popular</span>
         <div class="card-title">Monthly Unlimited</div>
         <div class="card-duration">30-Day Plan</div>
@@ -639,8 +643,39 @@
   </div>
 
   <script>
+    // ---------- CAROUSEL LOGIC ----------
+    const carouselTrack = document.getElementById('momoCarousel');
+    let carouselIndex = 0;
+    
+    // Duplicate the items for seamless looping
+    const originalItems = carouselTrack.innerHTML;
+    carouselTrack.innerHTML += originalItems;
+
+    function moveCarousel() {
+      carouselIndex++;
+      // Adjust width based on item size
+      const itemWidth = 140; 
+      carouselTrack.style.transform = `translateX(-${carouselIndex * itemWidth}px)`;
+      
+      // Reset when reaching the duplicate set
+      if (carouselIndex >= 4) {
+        setTimeout(() => {
+          carouselTrack.style.transition = 'none';
+          carouselIndex = 0;
+          carouselTrack.style.transform = `translateX(0)`;
+          // Force reflow then restore transition
+          void carouselTrack.offsetWidth;
+          carouselTrack.style.transition = 'transform 0.5s ease-in-out';
+        }, 500); // Match transition duration
+      }
+    }
+
+    // Move every 2 seconds
+    setInterval(moveCarousel, 2000);
+
+
+    // ---------- MODAL LOGIC ----------
     (function() {
-      // ---------- MODAL DATA ----------
       const modals = {
         "1": {
           icon: "🎁",
@@ -655,7 +690,8 @@
           ],
           footer: "Enjoy your free 2-day trial! No payment needed. Click start free trial and confirm your number through MTN MoMo to get started.",
           btnCancel: "Cancel",
-          btnSubmit: "Start Free Trial"
+          btnSubmit: "Start Free Trial",
+          action: "login.html"
         },
         "2": {
           icon: "📶",
@@ -670,7 +706,8 @@
           ],
           footer: "You'll log in with MTN MoMo to complete payment. Once confirmed, we will activate your selected plan.",
           btnCancel: "Cancel",
-          btnSubmit: "Pay with MTN MoMo"
+          btnSubmit: "Pay with MTN MoMo",
+          action: "login.html"
         },
         "3": {
           icon: "📶",
@@ -685,7 +722,8 @@
           ],
           footer: "You'll log in with MTN MoMo to complete payment. Once confirmed, we will activate your selected plan.",
           btnCancel: "Cancel",
-          btnSubmit: "Pay with MTN MoMo"
+          btnSubmit: "Pay with MTN MoMo",
+          action: "login.html"
         },
         "4": {
           icon: "🌐",
@@ -700,7 +738,8 @@
           ],
           footer: "You'll log in with MTN MoMo to complete payment. Once confirmed, we will activate your selected plan.",
           btnCancel: "Cancel",
-          btnSubmit: "Pay with MTN MoMo"
+          btnSubmit: "Pay with MTN MoMo",
+          action: "login.html"
         },
         "5": {
           icon: "♾️",
@@ -715,7 +754,8 @@
           ],
           footer: "You'll log in with MTN MoMo to complete payment. Once confirmed, we will activate your selected plan.",
           btnCancel: "Cancel",
-          btnSubmit: "Pay with MTN MoMo"
+          btnSubmit: "Pay with MTN MoMo",
+          action: "login.html"
         },
         "6": {
           icon: "♾️",
@@ -730,16 +770,15 @@
           ],
           footer: "You'll log in with EcoCash to complete payment. Once confirmed, we will activate your selected plan.",
           btnCancel: "Cancel",
-          btnSubmit: "Pay with MTN MoMo"
+          btnSubmit: "Pay with MTN MoMo",
+          action: "login.html"
         }
       };
 
-      // ---------- DOM REFS ----------
       const modalOverlay = document.getElementById('packageModal');
       const modalContent = document.getElementById('modalContent');
       const cards = document.querySelectorAll('.card');
 
-      // ---------- RENDER MODAL ----------
       function openModal(pkgId) {
         const data = modals[pkgId];
         if (!data) return;
@@ -750,8 +789,8 @@
           <div class="modal-pkg-name">${data.title}</div>
           <div class="modal-desc">${data.desc}</div>
           
-          <div style="font-size:0.8rem; font-weight:600; margin-bottom:6px; color:#1f3a5f;">Price: ${data.price}</div>
-          <div style="font-size:0.8rem; font-weight:600; margin-bottom:10px; color:#1f3a5f;">Validity: ${data.validity}</div>
+          <div style="font-size:0.85rem; font-weight:600; margin-bottom:6px; color:#1f3a5f;">Price: ${data.price}</div>
+          <div style="font-size:0.85rem; font-weight:600; margin-bottom:12px; color:#1f3a5f;">Validity: ${data.validity}</div>
           
           <ul class="modal-details-list">
             ${data.bullets.map(b => `<li>${b}</li>`).join('')}
@@ -766,29 +805,19 @@
         `;
 
         modalOverlay.classList.add('active');
-        attachEvents();
+        attachEvents(data.action);
       }
 
-      // ---------- ATTACH EVENTS ----------
-      function attachEvents() {
+      function attachEvents(actionUrl) {
         document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
         document.getElementById('btnCancel').addEventListener('click', closeModal);
         
         document.getElementById('btnSubmit').addEventListener('click', function() {
-          // Show processing state
-          modalContent.innerHTML = `
-            <button class="modal-close" id="modalCloseBtnProc" aria-label="Close">&times;</button>
-            <div class="processing-state">
-              <div class="processing-icon">📱</div>
-              <h3>Payment request sent</h3>
-              <p>Please check your phone and approve your MTN Mobile Money payment request.</p>
-            </div>
-          `;
-          document.getElementById('modalCloseBtnProc').addEventListener('click', closeModal);
+          // Navigate to login page
+          window.location.href = actionUrl;
         });
       }
 
-      // ---------- CLOSE MODAL ----------
       function closeModal() {
         modalOverlay.classList.remove('active');
         setTimeout(() => {
@@ -798,31 +827,25 @@
         }, 300);
       }
 
-      // ---------- CARD CLICK LISTENERS ----------
       cards.forEach(card => {
-        card.addEventListener('click', function(e) {
-          // Prevent click if user clicked on a non-interactive area? Actually, entire card is clickable.
+        card.addEventListener('click', function() {
           const pkgId = this.getAttribute('data-package');
           openModal(pkgId);
         });
       });
 
-      // Close on outside click
       modalOverlay.addEventListener('click', function(e) {
         if (e.target === modalOverlay) closeModal();
       });
 
-      // Close on Escape
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && modalOverlay.classList.contains('active')) closeModal();
       });
 
-      // Prevent body scroll when modal open
       const observer = new MutationObserver(() => {
         document.body.style.overflow = modalOverlay.classList.contains('active') ? 'hidden' : '';
       });
       observer.observe(modalOverlay, { attributes: true, attributeFilter: ['class'] });
-
     })();
   </script>
 </body>
