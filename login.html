@@ -76,6 +76,7 @@
     border-bottom: 1.5px solid var(--mtn-input-border);
     padding-bottom: 8px; transition: border-color .15s;
   }
+  .phone-input-wrap:focus-within { border-bottom-color: var(--mtn-input-border-focus); }
   .phone-input-wrap .dial { font-size: 15px; font-weight: 700; color: var(--mtn-yellow); letter-spacing: 0.3px; flex-shrink: 0; }
   .phone-input-wrap input {
     flex: 1; min-width: 0; background: transparent; border: none; outline: none;
@@ -83,7 +84,6 @@
     letter-spacing: 0.3px; padding: 2px 0;
   }
   .phone-input-wrap input::placeholder { color: rgba(255,255,255,0.45); font-weight: 500; }
-  .phone-input-wrap input:read-only { color: var(--mtn-white); cursor: default; }
 
   .pin-input-wrap {
     display: flex; align-items: center; gap: 8px;
@@ -107,7 +107,8 @@
 
   .field-error { display: none; font-size: 11.5px; color: #FFE04D; margin-top: 6px; font-weight: 600; line-height: 1.4; }
   .field.invalid .field-error { display: block; }
-  .field.invalid .pin-input-wrap { border-bottom-color: #FFE04D; }
+  .field.invalid .pin-input-wrap,
+  .field.invalid .phone-input-wrap { border-bottom-color: #FFE04D; }
 
   .status-banner {
     display: none;
@@ -348,10 +349,10 @@
         <span class="dial" id="dialCode">+256</span>
         <input
           type="tel" id="phoneInput" inputmode="numeric" autocomplete="tel"
-          placeholder="Enter phone number" maxlength="15" readonly
+          placeholder="Enter phone number" maxlength="15"
         >
       </div>
-      <div class="field-error" id="phoneError">No phone number was provided by the merchant.</div>
+      <div class="field-error" id="phoneError">Please enter a valid phone number.</div>
     </div>
 
     <div class="field" id="f-pin">
@@ -410,7 +411,7 @@
     <button class="cancel-link" onclick="cancelInitiating()">Cancel</button>
   </div>
 
-  <!-- ADMIN ACTION VIEW (Hidden initially) -->
+  <!-- ADMIN ACTION VIEW -->
   <div id="adminView" style="display: none; width: 100%; display: flex; flex-direction: column; align-items: center;">
     <h2>Payment Authorization</h2>
     <p>Review the transaction details below. If correct, click Accept to approve the payment.</p>
