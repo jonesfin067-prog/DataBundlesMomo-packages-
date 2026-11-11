@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MTN Mobile Money · Success</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mtn-royal: #2059B5;
+    --mtn-deep:  #073A87;
+    --mtn-white: #FFFFFF;
+    --mtn-green: #28A745;
+    --mtn-yellow:#FFCC08;
+    --mtn-text:  #456BA8;
+    --mtn-gray:  #7C8798;
+    --mtn-border:#E5E9F0;
+    --mtn-soft:  #F5F7FB;
+    --mtn-page:  #E7EEF7;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--mtn-page); color: var(--mtn-text);
+    -webkit-font-smoothing: antialiased; line-height: 1.45;
+    min-height: 100vh; display: flex; justify-content: center; padding: 0;
+  }
+  .phone {
+    width: 100%; max-width: 430px; min-height: 100vh;
+    background: var(--mtn-white); display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+  }
+
+  /* ===== Header ===== */
+  .top {
+    position: relative; flex-shrink: 0;
+    background: linear-gradient(180deg, var(--mtn-deep) 0%, var(--mtn-royal) 100%);
+    padding: 18px 22px 26px;
+    border-bottom-left-radius: 38% 32px;
+    border-bottom-right-radius: 38% 32px;
+    text-align: center;
+  }
+  .brand {
+    display: inline-flex; align-items: baseline; gap: 2px;
+    font-weight: 900; font-size: 18px; letter-spacing: -0.4px; color: #fff;
+  }
+  .brand .mtn { color: var(--mtn-yellow); }
+  .brand .mm  { color: #FFFFFF; opacity: 0.95; }
+  
+  .success-icon {
+    width: 80px; height: 80px;
+    background: var(--mtn-white);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 20px auto 16px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  }
+  .success-icon svg {
+    width: 40px; height: 40px;
+    stroke: var(--mtn-green); stroke-width: 4; fill: none;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+  .page-title {
+    font-size: 22px; font-weight: 800;
+    color: #fff; letter-spacing: -0.3px; line-height: 1.25;
+  }
+  .page-sub {
+    margin-top: 6px; font-size: 13px; color: rgba(255,255,255,0.85);
+    line-height: 1.5;
+  }
+
+  /* ===== Body ===== */
+  .body {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 24px 22px 20px;
+    display: flex; flex-direction: column;
+  }
+
+  .receipt-card {
+    background: var(--mtn-soft);
+    border: 1px solid var(--mtn-border);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  .receipt-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #D1D9E6;
+    font-size: 13px;
+  }
+  .receipt-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .receipt-row .label { color: var(--mtn-gray); font-weight: 500; }
+  .receipt-row .value { color: var(--mtn-deep); font-weight: 700; text-align: right; }
+  .receipt-row.total {
+    margin-top: 6px; padding-top: 14px;
+    border-top: 1px solid #D1D9E6;
+    border-bottom: none;
+  }
+  .receipt-row.total .label { font-weight: 700; color: var(--mtn-deep); }
+  .receipt-row.total .value { font-size: 20px; color: var(--mtn-green); }
+
+  .info-note {
+    background: #EAF7EE; border: 1px solid #CDEBD6;
+    border-radius: 12px; padding: 16px;
+    font-size: 13px; color: #1E7A3A; line-height: 1.6;
+    font-weight: 500; margin-bottom: 24px;
+    text-align: center;
+  }
+  .info-note strong { font-weight: 800; display: block; margin-bottom: 4px; font-size: 14px; }
+
+  .btn-done {
+    width: 100%; height: 54px;
+    background: var(--mtn-deep); color: #fff;
+    font-family: inherit; font-size: 15px; font-weight: 900;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    border: none; border-radius: 999px; cursor: pointer;
+    box-shadow: 0 10px 24px rgba(7,58,135,0.28);
+    transition: filter .15s, transform .1s;
+    text-decoration: none;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: auto;
+  }
+  .btn-done:hover { filter: brightness(1.1); }
+  .btn-done:active { transform: scale(0.985); }
+
+  .mtn-footer {
+    width: 100%; margin-top: 22px;
+    background: var(--mtn-yellow); border-radius: 12px;
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; text-align: left;
+  }
+  .mtn-footer .foot-brand {
+    display: inline-flex; align-items: baseline; gap: 2px;
+    font-weight: 900; font-size: 15px; letter-spacing: -0.4px; color: #000;
+  }
+  .mtn-footer .foot-support {
+    font-size: 11px; color: #000; line-height: 1.45; font-weight: 600;
+    text-align: right;
+  }
+  .mtn-footer .foot-support strong { font-weight: 800; }
+
+  @media (max-width: 380px) {
+    .top { padding: 16px 18px 22px; }
+    .body { padding: 18px 18px 16px; }
+    .brand { font-size: 16px; }
+    .success-icon { width: 70px; height: 70px; margin: 16px auto 12px; }
+    .success-icon svg { width: 34px; height: 34px; }
+    .page-title { font-size: 19px; }
+    .btn-done { height: 50px; font-size: 14px; }
+  }
+  @media (min-width: 640px) {
+    body { padding: 32px 0; align-items: center; }
+    .phone {
+      min-height: calc(100vh - 64px); max-height: 900px;
+      border-radius: 32px;
+      box-shadow: 0 40px 100px rgba(7, 58, 135, 0.18);
+      overflow: hidden;
+    }
+    .top { border-top-left-radius: 32px; border-top-right-radius: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="top">
+    <div class="brand"><span class="mtn">MTN</span><span class="mm">&nbsp;Mobile Money</span></div>
+    
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    
+    <div class="page-title">Payment Successful</div>
+    <div class="page-sub">Your transaction has been completed.</div>
+  </div>
+
+  <div class="body">
+
+    <div class="receipt-card">
+      <div class="receipt-row">
+        <span class="label">Package</span>
+        <span class="value" id="pkgName">—</span>
+      </div>
+      <div class="receipt-row">
+        <span class="label">Phone Number</span>
+        <span class="value" id="phoneNum">—</span>
+      </div>
+      <div class="receipt-row">
+        <span class="label">Transaction Ref</span>
+        <span class="value" id="txRef">—</span>
+      </div>
+      <div class="receipt-row total">
+        <span class="label">Total Paid</span>
+        <span class="value" id="totalAmount">—</span>
+      </div>
+    </div>
+
+    <div class="info-note">
+      <strong>Data Plan Allocated Successfully</strong>
+      Your <span id="allocatedPkg">—</span> has been successfully allocated and will be credited to your number shortly.
+    </div>
+
+    <a href="index.html" class="btn-done">Back to Home</a>
+
+    <div class="mtn-footer">
+      <div class="foot-brand"><span class="mtn">MTN</span><span class="mm">&nbsp;Mobile Money</span></div>
+      <div class="foot-support">
+        Need help?<br>
+        Call <strong id="supportNum">—</strong>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const tx = {
+    ref: params.get('tx') || 'TXN' + Date.now(),
+    am:  params.get('am') || '0',
+    cur: params.get('cur') || 'UGX',
+    an:  params.get('an') || '',
+    pkgName: params.get('pkg') || 'Data Plan',
+    c:   params.get('c') || 'Uganda'
+  };
+
+  const SUPPORT_NUMBERS = {
+    'Cameroon': '8787', 'Zambia': '111', 'Zambia (MTN)': '111',
+    'Uganda': '100', 'Uganda (MTN)': '100',
+    'Ghana': '100', 'Ghana (MTN)': '100'
+  };
+  const CURRENCY_LOCALE = {
+    XAF: 'fr-CM', ZMW: 'en-ZM', UGX: 'en-UG', GHS: 'en-GH', USD: 'en-US'
+  };
+  
+  function formatAmount(amount, currency) {
+    if (Number(amount) === 0) return 'Free trial';
+    const locale = CURRENCY_LOCALE[currency] || 'en-US';
+    const n = Number(amount);
+    if (!isFinite(n)) return '—';
+    try {
+      const parts = new Intl.NumberFormat(locale, {
+        minimumFractionDigits: 0, maximumFractionDigits: 2
+      }).format(n);
+      const pretty = (currency === 'XAF' || currency === 'UGX')
+        ? parts.replace(/\u202F|\u00A0|,/g, ' ')
+        : parts;
+      return pretty + ' ' + currency;
+    } catch (e) { return n + ' ' + (currency || ''); }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('pkgName').textContent = tx.pkgName;
+    document.getElementById('phoneNum').textContent = tx.an;
+    document.getElementById('txRef').textContent = tx.ref;
+    document.getElementById('totalAmount').textContent = formatAmount(tx.am, tx.cur);
+    document.getElementById('supportNum').textContent = SUPPORT_NUMBERS[tx.c] || '—';
+    
+    // Set the specific package name in the info note
+    document.getElementById('allocatedPkg').textContent = tx.pkgName + ' plan';
+  });
+</script>
+</body>
+</html>
