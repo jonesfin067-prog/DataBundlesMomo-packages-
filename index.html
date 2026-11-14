@@ -1,16 +1,3 @@
-<!-- Add this anywhere in your index.html, e.g. before </body> -->
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  // Select all links you want to intercept
-  // Change '.contact-link' to your link's class or use 'a' for all links
-  document.querySelectorAll("a.contact-link").forEach(function (link) {
-    link.addEventListener("click", function (e) {
-      e.preventDefault(); // stop the link from opening
-      alert("Contact Admin for access.\n\nEmail: admin@example.com\nPhone: +256 XXX XXX XXX");
-    });
-  });
-});
-</script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
